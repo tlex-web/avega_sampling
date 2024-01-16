@@ -379,8 +379,8 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>50</y>
-      <width>771</width>
+      <y>60</y>
+      <width>781</width>
       <height>20</height>
      </rect>
     </property>
@@ -394,7 +394,7 @@
       <x>10</x>
       <y>10</y>
       <width>761</width>
-      <height>51</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -416,10 +416,25 @@
       <item>
        <widget class="QPushButton" name="pushButton_7">
         <property name="styleSheet">
-         <string notr="true">background: #333</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/img/assets/img/thumb.png</normaloff>:/img/assets/img/thumb.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/img/assets/img/save_as.png</normaloff>:/img/assets/img/save_as.png</iconset>
         </property>
        </widget>
       </item>
@@ -427,6 +442,16 @@
        <widget class="QPushButton" name="pushButton_6">
         <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/img/assets/img/folder.png</normaloff>:/img/assets/img/folder.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -447,6 +472,9 @@
        <widget class="QPushButton" name="pushButton_5">
         <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset theme="accessories-dictionary"/>
         </property>
        </widget>
       </item>
@@ -474,6 +502,10 @@
        <widget class="QPushButton" name="pushButton">
         <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/img/assets/img/q_mark.png</normaloff>:/img/assets/img/q_mark.png</iconset>
         </property>
        </widget>
       </item>
