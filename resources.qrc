@@ -1,12 +1,12 @@
 <RCC>
-  <qresource prefix="img">
-    <file>assets/img/folder.png</file>
-    <file>assets/img/q_mark.png</file>
-    <file>assets/img/save_as.png</file>
-    <file>assets/img/thumb.png</file>
-    <file>assets/img/AVEGA-Revision.jpg</file>
+  <qresource>
     <file>assets/img/AVEGA-Favicon.ico</file>
+    <file>assets/img/AVEGA-Revision.jpg</file>
+    <file>assets/img/copy.png</file>
+    <file>assets/img/folder.png</file>
+    <file>assets/img/new_file.png</file>
+    <file>assets/img/paste.png</file>
+    <file>assets/img/q_mark.png</file>
+    <file>assets/img/save.png</file>
   </qresource>
-  <qresource prefix="fonts"/>
-  <qresource prefix="css"/>
 </RCC>

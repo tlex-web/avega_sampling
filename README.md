@@ -4,19 +4,19 @@
 Random number, random date and monetary unit sampling application
 
 ## Installation
-1. Create a Executable using pyinstaller
-2. Copy the executable to the folder where you want to use it
-3. Run the executable
+1. Create an Executable using pyinstaller
+2. Copy the Executable to the folder where you want to use it
+3. Run the Executable
 
 ## Usage
-1. Run the executable
+1. Run the Executable
 2. Select the type of sampling you want to do
 3. Enter the parameters
 4. Click on the button to generate the sample
-5. The sample will be generated in the same folder as the executable
+5. The sample will be generated in the same folder as the Executable
 
 ## Info 
-You can save the parameters and the random seed you used to create samples in a ``config.json`` file. The application will read the file and use the parameters and seed to generate the sample. The file should be in the same folder as the executable and should have the following format:
+You can save the parameters and the random seed you used to create samples in a ``config.json`` file. The application will read the file and use the parameters and seed to generate the sample. The file should be in the same folder as the Executable and should have the following format:
 
 ```json
 {
