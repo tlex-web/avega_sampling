@@ -16,7 +16,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/assets/img/AVEGA-Favicon.ico</normaloff>:/assets/img/AVEGA-Favicon.ico</iconset>
+    <normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</iconset>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -47,7 +47,7 @@
      <attribute name="title">
       <string>Number Sequences</string>
      </attribute>
-     <widget class="QGroupBox" name="sequence_box">
+     <widget class="QGroupBox" name="sequence_box_numbers">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -68,7 +68,7 @@
          <height>161</height>
         </rect>
        </property>
-       <layout class="QFormLayout" name="formLayout">
+       <layout class="QFormLayout" name="sequence_input_numbers">
         <item row="0" column="0">
          <widget class="QLabel" name="label_numbers_seq">
           <property name="text">
@@ -91,7 +91,11 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="lbound_numbers"/>
+         <widget class="QSpinBox" name="lbound_numbers">
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="label_numbers_ubound">
@@ -101,7 +105,11 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QSpinBox" name="ubound_numbers"/>
+         <widget class="QSpinBox" name="ubound_numbers">
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <spacer name="verticalSpacer">
@@ -158,7 +166,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groups_box">
+     <widget class="QGroupBox" name="groups_box_numbers">
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -179,7 +187,7 @@
          <height>81</height>
         </rect>
        </property>
-       <layout class="QFormLayout" name="formLayout_2">
+       <layout class="QFormLayout" name="group_numbers_input_numbers">
         <item row="0" column="0">
          <widget class="QLabel" name="label_numbers_n_groups">
           <property name="text">
@@ -188,7 +196,11 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="n_groups_numbers"/>
+         <widget class="QSpinBox" name="n_groups_numbers">
+          <property name="maximum">
+           <number>10</number>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_numbers_n_elements">
@@ -198,7 +210,11 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="n_elements_numbers"/>
+         <widget class="QSpinBox" name="n_elements_numbers">
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <spacer name="verticalSpacer_5">
@@ -229,7 +245,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="sort_groups_box">
+     <widget class="QGroupBox" name="sort_groups_box_numbers">
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -250,7 +266,7 @@
          <height>41</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="sort_input_numbers">
         <item>
          <widget class="QRadioButton" name="radiobutton_asc_numbers">
           <property name="text">
@@ -287,7 +303,7 @@
         <height>51</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QHBoxLayout" name="output_btn_numbers">
        <item>
         <widget class="QPushButton" name="btn_seed_numbers">
          <property name="font">
@@ -361,22 +377,12 @@
        </item>
       </layout>
      </widget>
-     <widget class="QTextBrowser" name="output_element">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>250</y>
-        <width>256</width>
-        <height>81</height>
-       </rect>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="tab_dates">
      <attribute name="title">
       <string>Date sequences</string>
      </attribute>
-     <widget class="QGroupBox" name="sequence_box_2">
+     <widget class="QGroupBox" name="sequence_dates_box">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -397,7 +403,7 @@
          <height>161</height>
         </rect>
        </property>
-       <layout class="QFormLayout" name="formLayout_3">
+       <layout class="QFormLayout" name="sequence_dates_input">
         <item row="0" column="0">
          <widget class="QLabel" name="label_dates_seq">
           <property name="text">
@@ -503,7 +509,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="groups_box_2">
+     <widget class="QGroupBox" name="groups_box_dates">
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -524,7 +530,7 @@
          <height>81</height>
         </rect>
        </property>
-       <layout class="QFormLayout" name="formLayout_4">
+       <layout class="QFormLayout" name="group_input_dates">
         <item row="0" column="0">
          <widget class="QLabel" name="label_dates_n_groups">
           <property name="text">
@@ -533,7 +539,11 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QSpinBox" name="n_groups_dates"/>
+         <widget class="QSpinBox" name="n_groups_dates">
+          <property name="maximum">
+           <number>10</number>
+          </property>
+         </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_dates_n_elements">
@@ -543,7 +553,11 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="n_elements_dates"/>
+         <widget class="QSpinBox" name="n_elements_dates">
+          <property name="maximum">
+           <number>999999999</number>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
          <spacer name="verticalSpacer_11">
@@ -574,7 +588,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QGroupBox" name="sort_groups_box_2">
+     <widget class="QGroupBox" name="sort_numbers_box_dates">
       <property name="geometry">
        <rect>
         <x>340</x>
@@ -595,7 +609,7 @@
          <height>41</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QHBoxLayout" name="sort_numbers_input_dates">
         <item>
          <widget class="QRadioButton" name="radiobutton_asc_dates">
           <property name="text">
@@ -632,7 +646,7 @@
         <height>51</height>
        </rect>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <layout class="QHBoxLayout" name="output_area_dates">
        <item>
         <widget class="QPushButton" name="btn_seed_dates">
          <property name="font">
@@ -697,7 +711,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QGroupBox" name="groupBox">
+     <widget class="QGroupBox" name="exclude_dates">
       <property name="geometry">
        <rect>
         <x>20</x>
@@ -714,7 +728,7 @@
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>251</width>
+         <width>252</width>
          <height>51</height>
         </rect>
        </property>
@@ -763,7 +777,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QFrame" name="frame">
+   <widget class="QFrame" name="action_box">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -790,7 +804,7 @@
        <height>28</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="action_box_2">
       <item>
        <widget class="QPushButton" name="pushButton_new_file">
         <property name="toolTip">
@@ -801,7 +815,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/new_file.png</normaloff>:/assets/img/new_file.png</iconset>
+          <normaloff>:/icons/assets/icons/new_file.png</normaloff>:/icons/assets/icons/new_file.png</iconset>
         </property>
         <property name="autoDefault">
          <bool>false</bool>
@@ -824,7 +838,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/folder.png</normaloff>:/assets/img/folder.png</iconset>
+          <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
         </property>
        </widget>
       </item>
@@ -838,7 +852,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/save.png</normaloff>:/assets/img/save.png</iconset>
+          <normaloff>:/icons/assets/icons/folder.png</normaloff>:/icons/assets/icons/folder.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -871,7 +885,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/copy.png</normaloff>:/assets/img/copy.png</iconset>
+          <normaloff>:/icons/assets/icons/copy.png</normaloff>:/icons/assets/icons/copy.png</iconset>
         </property>
        </widget>
       </item>
@@ -885,7 +899,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/paste.png</normaloff>:/assets/img/paste.png</iconset>
+          <normaloff>:/icons/assets/icons/paste.png</normaloff>:/icons/assets/icons/paste.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -918,11 +932,179 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/assets/img/q_mark.png</normaloff>:/assets/img/q_mark.png</iconset>
+          <normaloff>:/icons/assets/icons/q_mark.png</normaloff>:/icons/assets/icons/q_mark.png</iconset>
         </property>
        </widget>
       </item>
      </layout>
+    </widget>
+    <widget class="QFrame" name="legend">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>761</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>731</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="legend_btn">
+       <item>
+        <widget class="QPushButton" name="pushButton_new_file_2">
+         <property name="toolTip">
+          <string>new file</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/new_file.png</normaloff>:/icons/assets/icons/new_file.png</iconset>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_save_as_2">
+         <property name="toolTip">
+          <string>save as</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_save_2">
+         <property name="toolTip">
+          <string>save</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/folder.png</normaloff>:/icons/assets/icons/folder.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_copy_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>copy</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/copy.png</normaloff>:/icons/assets/icons/copy.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QPushButton" name="pushButton_paste_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>paste</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/paste.png</normaloff>:/icons/assets/icons/paste.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_help_2">
+         <property name="toolTip">
+          <string>help</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/icons/assets/icons/q_mark.png</normaloff>:/icons/assets/icons/q_mark.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_4">
@@ -934,7 +1116,7 @@
       <height>31</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="company_input">
      <item>
       <widget class="QLabel" name="company_label">
        <property name="text">
@@ -1004,7 +1186,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <zorder>frame</zorder>
+   <zorder>action_box</zorder>
    <zorder>sampling_types</zorder>
    <zorder>line</zorder>
    <zorder>horizontalLayoutWidget_4</zorder>
