@@ -1,58 +1,44 @@
-import pytest
-import sqlite3
+# FILEPATH: /c:/programming/avega_sampling/tests/test_db.py
 
+import pytest
+from PyQt6.QtSql import QSqlDatabase
 from db.DB import Database
 
-
-def test_db_init():
-    db = Database(":memory:")
-    assert db.db_file == ":memory:"
-    assert db.conn == None
+from tests.fixtures import setup_database
 
 
-def test_db_str():
-    db = Database(":memory:")
-    assert (
-        str(db)
-        == f"Database object for :memory:\n Connection: None\n Version: {sqlite3.version}\n"
+def test_database_connection(setup_database):
+    assert setup_database.db.isOpen()
+
+
+def test_database_insert(setup_database):
+    setup_database.insert("test_table", ("test_value",))
+    query = QSqlDatabase.database().exec("SELECT * FROM test_table")
+    assert query.value(0) == "test_value"
+
+
+def test_database_update(setup_database):
+    setup_database.insert("test_table", ("test_value",))
+    setup_database.update("test_table", ("updated_value",), "column='test_value'")
+    query = QSqlDatabase.database().exec(
+        "SELECT * FROM test_table WHERE column='updated_value'"
     )
+    assert query.value(0) == "updated_value"
 
 
-def test_db_connect():
-    db = Database(":memory:")
-    db.connect()
-    assert db.conn != None
+def test_database_delete(setup_database):
+    setup_database.insert("test_table", ("test_value",))
+    setup_database.delete("test_table", "column='test_value'")
+    query = QSqlDatabase.database().exec(
+        "SELECT * FROM test_table WHERE column='test_value'"
+    )
+    assert not query.value(0) == "test_value"
 
 
-def test_db_close():
-    db = Database(":memory:")
-    db.connect()
-    db.close()
-    assert db.conn == None
-
-
-def test_db_execute():
-    db = Database(":memory:")
-    db.connect()
-    db.execute("CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)")
-    db.execute("INSERT INTO test VALUES (1, 'test')")
-    assert db.query("SELECT * FROM test") == [(1, "test")]
-    db.close()
-
-
-def test_db_query():
-    db = Database(":memory:")
-    db.connect()
-    db.execute("CREATE TABLE test (id INTEGER PRIMARY KEY, name TEXT)")
-    db.execute("INSERT INTO test VALUES (1, 'test')")
-    assert db.query("SELECT * FROM test") == [(1, "test")]
-    db.close()
-
-
-def test_db_create_table():
-    db = Database(":memory:")
-    db.connect()
-    db.create_table("test", ["id INTEGER PRIMARY KEY", "name TEXT"])
-    db.execute("INSERT INTO test VALUES (1, 'test')")
-    assert db.query("SELECT * FROM test") == [(1, "test")]
-    db.close()
+def test_database_read(setup_database):
+    setup_database.insert("test_table", ("test_value",))
+    setup_database.read("test_table", "column", "column='test_value'")
+    query = QSqlDatabase.database().exec(
+        "SELECT * FROM test_table WHERE column='test_value'"
+    )
+    assert query.value(0) == "test_value"

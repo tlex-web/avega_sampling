@@ -1,6 +1,8 @@
 import pytest
 import os
 
+from db.DB import Database
+
 
 @pytest.fixture
 def project_root():
@@ -17,3 +19,11 @@ def app():
 @pytest.fixture
 def window(app):
     return app.window
+
+
+@pytest.fixture
+def setup_database():
+    db = Database(":memory:")
+    db.connect()
+    yield db
+    db.close()

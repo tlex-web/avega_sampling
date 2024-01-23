@@ -1,12 +1,17 @@
 import sys
-from PyQt6 import QtWidgets, QtGui
+from PyQt6 import QtWidgets
 
 from MainWindow import Ui_MainWindow
 from OutputWindow import Ui_MainWindow as Ui_OutputWindow
+from SeedWindow import Ui_Form as Ui_SeedWindow
 from utils.PCGRNG import PCGRNG
 from db.DB import Database
 
 import resources  # needed for assets and correct packaging
+
+
+# create global database object
+db = Database("seed_store.db")
 
 
 class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
@@ -16,100 +21,11 @@ class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
         self.setupUi(self)
 
 
-class SeedWindow(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
+class SeedWindow(QtWidgets.QWidget, Ui_SeedWindow):
+    def __init__(self, *args, obj=None, **kwargs):
+        super(SeedWindow, self).__init__(*args, **kwargs)
 
-        layout = QtWidgets.QVBoxLayout()
-
-        # set title and icon
-        self.setWindowTitle("Generate seed")
-        self.setWindowIcon(QtGui.QIcon(":/icons/seed.png"))
-
-        # create a radio button group to either generate a seed or enter a custom one
-        self.radiobutton_group = QtWidgets.QButtonGroup()
-        self.radiobutton_group.setExclusive(True)
-
-        self.radiobutton_generate = QtWidgets.QRadioButton("Generate seed")
-        self.radiobutton_generate.setChecked(True)
-        self.radiobutton_generate.toggled.connect(self.generate_seed)
-
-        self.radiobutton_custom = QtWidgets.QRadioButton("Enter custom seed")
-        self.radiobutton_custom.toggled.connect(self.set_seed)
-
-        self.radiobutton_group.addButton(self.radiobutton_generate)
-        self.radiobutton_group.addButton(self.radiobutton_custom)
-
-        layout.addWidget(self.radiobutton_generate)
-        layout.addWidget(self.radiobutton_custom)
-
-        # create a line edit to enter a custom seed
-        self.lineedit_seed = QtWidgets.QLineEdit()
-        self.lineedit_seed.setPlaceholderText("Enter seed")
-        self.lineedit_seed.setEnabled(False)
-
-        layout.addWidget(self.lineedit_seed)
-
-        # create a button to generate a seed and close the window
-        self.button_generate = QtWidgets.QPushButton("Generate")
-        self.button_generate.clicked.connect(self.close_window)
-
-        layout.addWidget(self.button_generate)
-
-        self.setLayout(layout)
-
-        # get the selected option from the radio button group after the window is closed and store it in a variable
-        self.selected_option = self.radiobutton_group.checkedButton().text()
-
-        # create a database object
-
-    db = Database("db/pcg.db")
-
-    def generate_seed(self):
-        """Generates a seed for the random number generator"""
-
-        # enable the line edit
-        self.lineedit_seed.setEnabled(False)
-
-        # generate a seed
-        pcg = PCGRNG()
-        seed = pcg.next()
-
-        # check if the seed is in the database
-        if self.db.query(f"SELECT * FROM seeds WHERE seed={seed}"):
-            self.generate_seed()
-        else:
-            self.lineedit_seed.setText(str(seed))
-
-        # add the seed to the database
-        self.db.execute(f"INSERT INTO seeds VALUES ({seed})")
-
-    def set_seed(self):
-        """Sets the seed and closes the window"""
-
-        # get the seed from the line edit
-        seed = self.lineedit_seed.text()
-
-        # check if the seed is valid
-        if seed.isnumeric():
-            seed = int(seed)
-        else:
-            self.lineedit_seed.setStyleSheet("color: red")
-            return
-
-        # check if the seed is in the database
-        if self.db.query(f"SELECT * FROM seeds WHERE seed={seed}"):
-            self.lineedit_seed.setStyleSheet("color: red")
-            return
-        else:
-            self.lineedit_seed.setStyleSheet("color: black")
-
-        # add the seed to the database
-        self.db.execute(f"INSERT INTO seeds VALUES ({seed})")
-
-    def close_window(self):
-        """Closes the window"""
-        self.close()
+        self.setupUi(self)
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -219,6 +135,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def generate_seed(self):
         """Generates a seed for the random number generator"""
         pass
+
+    def set_seed(self):
+        """Sets the seed for the random number generator"""
+
+        seed_window = SeedWindow()
+        seed_window.show()
+
+        # determine the selected option and set the seed accordingly
+        if seed_window.radio_gen_new_seed.isChecked():
+            seed = seed_window.gen_new_seed.value()
+        elif seed_window.radio_old_seed.isChecked():
+            seed = seed_window.old_seed.value()
+        elif seed_window.radio_con_old_seed.isChecked():
+            seed = seed_window.con_old_seed.value()
+        else:
+            seed = None
+
+        if seed is not None:
+            pcg = PCGRNG(initstate=seed)
+        else:
+            pcg = PCGRNG()
 
 
 class App(QtWidgets.QApplication):
