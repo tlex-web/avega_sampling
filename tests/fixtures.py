@@ -27,3 +27,9 @@ def setup_database():
     db.connect()
     yield db
     db.close()
+
+
+@pytest.fixture
+def zero_state_db():
+
+    yield Database(":memory").delete("test_table", "column='test_value'")

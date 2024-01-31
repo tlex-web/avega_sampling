@@ -4,7 +4,7 @@ import pytest
 from PyQt6.QtSql import QSqlDatabase
 from db.DB import Database
 
-from tests.fixtures import setup_database
+from tests.fixtures import setup_database, zero_state_db
 
 
 def test_database_connection(setup_database):

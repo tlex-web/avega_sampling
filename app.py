@@ -152,10 +152,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             seed = None
 
+        pcg = None
+
         if seed is not None:
             pcg = PCGRNG(initstate=seed)
         else:
             pcg = PCGRNG()
+
+        return pcg
 
 
 class App(QtWidgets.QApplication):
