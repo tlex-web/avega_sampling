@@ -25,11 +25,8 @@ def window(app):
 def setup_database():
     db = Database(":memory:")
     db.connect()
+    db.create_table()
     yield db
     db.close()
-
-
-@pytest.fixture
-def zero_state_db():
-
-    yield Database(":memory").delete("test_table", "column='test_value'")
+    # teardown
+    db.close()

@@ -37,69 +37,16 @@ class Database:
         else:
             log.error(f"Cannot close database: {self.db.lastError().text()}")
 
-    def insert(self, table: str, values: str | list[str]):
-        """Insert values into a table
+    def create_table(self):
+        """Create user, seed and project table in the database"""
 
-        Args:
-            table (str): Name of the table to insert into
-            values (tuple): Values to insert into the table
-        """
         query = QSqlQuery()
-        query.prepare(f"INSERT INTO {table} VALUES {values}")
-
-        if not query.exec():
-            log.error(
-                f"Cannot insert values into table {table}: {query.lastError().text()}"
-            )
-        else:
-            log.info(f"Inserted values into table {table}")
-
-    def update(self, table: str, values: tuple, where: str):
-        """Update values in a table
-
-        Args:
-            table (str): Name of the table to update
-            values (tuple): Values to update in the table
-            where (str): Where clause to use
-        """
-        query = QSqlQuery()
-        query.prepare(f"UPDATE {table} SET {values} WHERE {where}")
-        if not query.exec():
-            log.error(
-                f"Cannot update values in table {table}: {query.lastError().text()}"
-            )
-        else:
-            log.info(f"Updated values in table {table}")
-
-    def delete(self, table: str, where: str):
-        """Delete values from a table
-
-        Args:
-            table (str): Name of the table to delete from
-            where (str): Where clause to use
-        """
-        query = QSqlQuery()
-        query.prepare(f"DELETE FROM {table} WHERE {where}")
-        if not query.exec():
-            log.error(
-                f"Cannot delete values from table {table}: {query.lastError().text()}"
-            )
-        else:
-            log.info(f"Deleted values from table {table}")
-
-    def read(self, table: str, columns: str, where: str):
-        """Read values from a table
-
-        Args:
-            table (str): Name of the table to read from
-            columns (str): Columns to read from the table
-            where (str): Where clause to use
-        """
-        query = QSqlQuery()
-        query.prepare(f"SELECT {columns} FROM {table} WHERE {where}")
-        if not query.exec():
-            log.error(
-                f"Cannot read values from table {table}: {query.lastError().text()}"
-            )
-        else:
-            log.info(f"Read values from table {table}")
+        query.exec(
+            """CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL)"""
+        )
+        query.exec(
+            """CREATE TABLE IF NOT EXISTS projects (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
+        )
+        query.exec(
+            """CREATE TABLE IF NOT EXISTS seeds (id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value TEXT NOT NULL, project_id INTEGER NOT NULL, FOREIGN KEY(project_id) REFERENCES projects(id))"""
+        )
