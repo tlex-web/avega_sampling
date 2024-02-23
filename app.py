@@ -1,11 +1,11 @@
 import sys
 from PyQt6 import QtWidgets
 
-from MainWindow import Ui_MainWindow
-from OutputWindow import Ui_MainWindow as Ui_OutputWindow
-from SeedWindow import Ui_Form as Ui_SeedWindow
+from view.MainWindow import Ui_MainWindow
+from view.OutputWindow import Ui_MainWindow as Ui_OutputWindow
+from view.SeedWindow import Ui_Form as Ui_SeedWindow
 from utils.PCGRNG import PCGRNG
-from db.DB import Database
+from db.Database import Database
 
 import resources  # needed for assets and correct packaging
 

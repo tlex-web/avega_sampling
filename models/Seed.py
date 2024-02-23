@@ -26,15 +26,16 @@ class Seed:
         """
 
         query = QSqlQuery()
-        query.prepare("SELECT * FROM seeds WHERE id = ?")
+        query.prepare("SELECT * FROM seeds WHERE seed_id = ?")
         query.addBindValue(seed_id)
+        query.exec()
 
         if query.next():
-            record = query.record()
+
             return {
-                "id": record.value("id"),
-                "seed_value": record.value("seed_value"),
-                "project_id": record.value("project_id"),
+                "id": query.value("id"),
+                "seed_value": query.value("seed_value"),
+                "project_id": query.value("project_id"),
             }
 
         return None

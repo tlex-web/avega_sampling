@@ -1,5 +1,9 @@
 from PyQt6.QtSql import QSqlQuery
 
+from utils.Logger import Logger
+
+log = Logger()
+
 
 class User:
 
@@ -14,6 +18,8 @@ class User:
         query.prepare("INSERT INTO users (username) VALUES (?)")
         query.addBindValue(username)
 
+        log.info(f"Created user with username: {username}")
+
         return query.exec()
 
     def read_user(self, user_id: int):
@@ -26,18 +32,23 @@ class User:
             QSqlQuery: Query object
         """
 
-        query = QSqlQuery()
-        query.prepare("SELECT * FROM users WHERE user_id = ?")
-        query.addBindValue(user_id)
+        try:
+            query = QSqlQuery()
+            query.prepare("SELECT * FROM users WHERE user_id = ?")
+            query.addBindValue(user_id)
+            query.exec()
 
-        if query.next():
-            record = query.record()
-            return {
-                "user_id": record.value("user_id"),
-                "username": record.value("username"),
-            }
+            if query.next():
 
-        return None
+                log.info(f"Read user with id: {user_id}")
+                return {
+                    "user_id": query.value("user_id"),
+                    "username": query.value("username"),
+                }
+
+        except Exception as e:
+            log.error(f"Error reading user: {e}")
+            return None
 
     def update_user(self, user_id: int, username: str):
         """Update a user in the database
@@ -52,6 +63,8 @@ class User:
         query.addBindValue(username)
         query.addBindValue(user_id)
 
+        log.info(f"Updated user with id: {user_id}")
+
         return query.exec()
 
     def delete_user(self, user_id: int):
@@ -64,5 +77,7 @@ class User:
         query = QSqlQuery()
         query.prepare("DELETE FROM users WHERE user_id = ?")
         query.addBindValue(user_id)
+
+        log.info(f"Deleted user with id: {user_id}")
 
         return query.exec()

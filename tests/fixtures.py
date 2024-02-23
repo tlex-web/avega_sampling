@@ -1,7 +1,9 @@
 import pytest
 import os
 
-from db.DB import Database
+from db.Database import Database
+from utils.FetchPublicHolidays import FetchPublicHolidays
+from utils.PCGRNG import PCGRNG
 
 
 @pytest.fixture
@@ -23,10 +25,17 @@ def window(app):
 
 @pytest.fixture
 def setup_database():
-    db = Database(":memory:")
-    db.connect()
-    db.create_table()
+    db = Database("./tests/test.db")
     yield db
+
     db.close()
-    # teardown
-    db.close()
+
+
+@pytest.fixture
+def fetch_public_holidays():
+    return FetchPublicHolidays(2022)
+
+
+@pytest.fixture
+def generate_seed():
+    return PCGRNG()

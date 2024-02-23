@@ -37,16 +37,42 @@ class Database:
         else:
             log.error(f"Cannot close database: {self.db.lastError().text()}")
 
-    def create_table(self):
+    def create_tables(self):
         """Create user, seed and project table in the database"""
 
         query = QSqlQuery()
         query.exec(
-            """CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL)"""
+            """CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL)"""
         )
         query.exec(
-            """CREATE TABLE IF NOT EXISTS projects (id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
+            """CREATE TABLE IF NOT EXISTS projects (project_id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
         )
         query.exec(
-            """CREATE TABLE IF NOT EXISTS seeds (id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value TEXT NOT NULL, project_id INTEGER NOT NULL, FOREIGN KEY(project_id) REFERENCES projects(id))"""
+            """CREATE TABLE IF NOT EXISTS seeds (seed_id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value INTEGER NOT NULL, project_id INTEGER NOT NULL, FOREIGN KEY(project_id) REFERENCES projects(id))"""
         )
+
+        log.info("Created tables: users, projects, seeds")
+
+    def drop_table(self, table_name: str):
+        """Drop a table from the database
+
+        Args:
+            table_name (str): Name of the table to drop
+        """
+
+        query = QSqlQuery()
+        query.exec(f"DROP TABLE {table_name}")
+
+        log.info(f"Dropped table: {table_name}")
+
+    def clear_table(self, table_name: str):
+        """Clear a table from the database
+
+        Args:
+            table_name (str): Name of the table to clear
+        """
+
+        query = QSqlQuery()
+        query.exec(f"DELETE FROM {table_name}")
+
+        log.info(f"Cleared table: {table_name}")

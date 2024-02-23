@@ -18,7 +18,7 @@ class Project:
 
         return query.exec()
 
-    def update_project(self, name: str, project_id: int) -> bool:
+    def update_project(self, name: str, project_id: int, user_id: int) -> bool:
         """Update a project in the database
 
         Args:
@@ -27,9 +27,12 @@ class Project:
         """
 
         query = QSqlQuery()
-        query.prepare("UPDATE projects SET project_name = ? WHERE id = ?")
+        query.prepare(
+            "UPDATE projects SET project_name = ? WHERE project_id = ? AND user_id = ?"
+        )
         query.addBindValue(name)
         query.addBindValue(project_id)
+        query.addBindValue(user_id)
 
         return query.exec()
 
@@ -41,7 +44,7 @@ class Project:
         """
 
         query = QSqlQuery()
-        query.prepare("DELETE FROM projects WHERE id = ?")
+        query.prepare("DELETE FROM projects WHERE project_id = ?")
         query.addBindValue(project_id)
 
         return query.exec()
@@ -54,15 +57,16 @@ class Project:
         """
 
         query = QSqlQuery()
-        query.prepare("SELECT * FROM projects WHERE id = ?")
+        query.prepare("SELECT * FROM projects WHERE project_id = ?")
         query.addBindValue(project_id)
+        query.exec()
 
         if query.next():
-            record = query.record()
+
             return {
-                "id": record.value("id"),
-                "project_name": record.value("project_name"),
-                "user_id": record.value("user_id"),
+                "project_id": query.value("project_id"),
+                "project_name": query.value("project_name"),
+                "user_id": query.value("user_id"),
             }
 
         return None
