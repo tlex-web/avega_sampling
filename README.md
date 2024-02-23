@@ -1,5 +1,11 @@
 # AVEGA Random 
 
+![GitHub top language](https://img.shields.io/github/languages/top/tlex-web/avega_sampling)
+![GitHub](https://img.shields.io/github/license/tlex-web/avega_sampling)
+![GitHub last commit](https://img.shields.io/github/last-commit/tlex-web/avega_sampling)
+![Lines of code](https://img.shields.io/tokei/lines/github/tlex-web/avega_sampling)
+
+
 ## Description
 Random number, random date and monetary unit sampling application
 
