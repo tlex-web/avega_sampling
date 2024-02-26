@@ -1,8 +1,9 @@
 from PyQt6.QtSql import QSqlQuery
 
-from utils.Logger import Logger
+from utils.Logger import Logger, LogEnvironment
+from config import ENV
 
-log = Logger()
+log = Logger(True if ENV == "Development" else False)
 
 
 class User:
@@ -18,7 +19,7 @@ class User:
         query.prepare("INSERT INTO users (username) VALUES (?)")
         query.addBindValue(username)
 
-        log.info(f"Created user with username: {username}")
+        log.info(f"Created user with username: {username}", LogEnvironment.MODELS)
 
         return query.exec()
 
@@ -40,14 +41,14 @@ class User:
 
             if query.next():
 
-                log.info(f"Read user with id: {user_id}")
+                log.info(f"Read user with id: {user_id}", LogEnvironment.MODELS)
                 return {
                     "user_id": query.value("user_id"),
                     "username": query.value("username"),
                 }
 
         except Exception as e:
-            log.error(f"Error reading user: {e}")
+            log.error(f"Error reading user: {e}", LogEnvironment.MODELS)
             return None
 
     def update_user(self, user_id: int, username: str):
@@ -63,7 +64,7 @@ class User:
         query.addBindValue(username)
         query.addBindValue(user_id)
 
-        log.info(f"Updated user with id: {user_id}")
+        log.info(f"Updated user with id: {user_id}", LogEnvironment.MODELS)
 
         return query.exec()
 
@@ -78,6 +79,6 @@ class User:
         query.prepare("DELETE FROM users WHERE user_id = ?")
         query.addBindValue(user_id)
 
-        log.info(f"Deleted user with id: {user_id}")
+        log.info(f"Deleted user with id: {user_id}", LogEnvironment.MODELS)
 
         return query.exec()

@@ -13,13 +13,13 @@ class UserController:
         self.view.update_user_signal.connect(self.update_user)
         self.view.delete_user_signal.connect(self.delete_user)
 
-    def add_user(self, name, email):
+    def add_user(self, name):
         if self.model.create_user(name):
             self.view.show_message("User added successfully")
         else:
             self.view.show_error("Failed to add user")
 
-    def update_user(self, user_id, name, email):
+    def update_user(self, user_id, name):
         if self.model.update_user(user_id, name):
             self.view.show_message("User updated successfully")
         else:

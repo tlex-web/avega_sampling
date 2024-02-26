@@ -1,9 +1,10 @@
 import sys
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 
-from utils.Logger import Logger
+from utils.Logger import Logger, LogEnvironment
+from config import ENV
 
-log = Logger()
+log = Logger(True if ENV == "Development" else False)
 
 
 class Database:
@@ -23,19 +24,25 @@ class Database:
 
     def connect(self):
         if not self.db.open():
-            log.error(f"Cannot open database: {self.db.lastError().text()}")
+            log.error(
+                f"Cannot open database: {self.db.lastError().text()}",
+                LogEnvironment.DATABASE,
+            )
             sys.exit(1)
         else:
             self.conn = self.db
-            log.info(f"Connected to database: {self.db_file}")
+            log.info(f"Connected to database: {self.db_file}", LogEnvironment.DATABASE)
 
     def close(self):
         if self.db.isOpen():
             self.db.close()
-            log.info(f"Closed database: {self.db_file}")
+            log.info(f"Closed database: {self.db_file}", LogEnvironment.DATABASE)
 
         else:
-            log.error(f"Cannot close database: {self.db.lastError().text()}")
+            log.error(
+                f"Cannot close database: {self.db.lastError().text()}",
+                LogEnvironment.DATABASE,
+            )
 
     def create_tables(self):
         """Create user, seed and project table in the database"""
@@ -51,7 +58,7 @@ class Database:
             """CREATE TABLE IF NOT EXISTS seeds (seed_id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value INTEGER NOT NULL, project_id INTEGER NOT NULL, FOREIGN KEY(project_id) REFERENCES projects(id))"""
         )
 
-        log.info("Created tables: users, projects, seeds")
+        log.info("Created tables: users, projects, seeds", LogEnvironment.DATABASE)
 
     def drop_table(self, table_name: str):
         """Drop a table from the database
@@ -63,7 +70,7 @@ class Database:
         query = QSqlQuery()
         query.exec(f"DROP TABLE {table_name}")
 
-        log.info(f"Dropped table: {table_name}")
+        log.info(f"Dropped table: {table_name}", LogEnvironment.DATABASE)
 
     def clear_table(self, table_name: str):
         """Clear a table from the database
@@ -75,4 +82,4 @@ class Database:
         query = QSqlQuery()
         query.exec(f"DELETE FROM {table_name}")
 
-        log.info(f"Cleared table: {table_name}")
+        log.info(f"Cleared table: {table_name}", LogEnvironment.DATABASE)

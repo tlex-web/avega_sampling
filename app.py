@@ -4,14 +4,20 @@ from PyQt6 import QtWidgets
 from view.MainWindow import Ui_MainWindow
 from view.OutputWindow import Ui_MainWindow as Ui_OutputWindow
 from view.SeedWindow import Ui_Form as Ui_SeedWindow
+
+from controllers.userController import UserController
+from controllers.seedController import SeedController
+from controllers.projectController import ProjectController
+
 from utils.PCGRNG import PCGRNG
 from db.Database import Database
+from config import DB_FILENAME
 
 import resources  # needed for assets and correct packaging
 
 
 # create global database object
-db = Database("seed_store.db")
+db = Database(DB_FILENAME)
 
 
 class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
@@ -36,6 +42,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # setup the output window
         self.output_window = OutputWindow()
 
+        # setup the seed window
+        self.seed_window = SeedWindow()
+
         self.pushButton_new_file.clicked.connect(self.new_file)
         self.pushButton_save_as.clicked.connect(self.save_as)
         self.pushButton_save.clicked.connect(self.save)
@@ -43,8 +52,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_paste.clicked.connect(self.paste)
         self.pushButton_help.clicked.connect(self.help)
 
+        self.btn_seed_numbers.clicked.connect(self.set_number_seed)
+        self.btn_seed_dates.clicked.connect(self.set_dates_seed)
+
         self.btn_generate_numbers.clicked.connect(self.generate_numbers)
         self.btn_seed_numbers.clicked.connect(self.generate_seed)
+        self.btn_clear_numbers.clicked.connect(self.clear_numbers)
+
+        self.btn_generate_dates.clicked.connect(self.generate_dates)
+        self.btn_seed_dates.clicked.connect(self.generate_seed)
+        self.btn_clear_dates.clicked.connect(self.clear_dates)
 
     def new_file(self):
         pass
@@ -63,6 +80,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def help(self):
         pass
+
+    def set_number_seed(self):
+        if self.seed_window.isVisible():
+            self.seed_window.close()
+        else:
+            self.seed_window.show()
+
+    def set_dates_seed(self):
+        if self.seed_window.isVisible():
+            self.seed_window.close()
+        else:
+            self.seed_window.show()
 
     def generate_numbers(self):
         # get the values from the input fields and convert them to the correct type
@@ -160,6 +189,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             pcg = PCGRNG()
 
         return pcg
+
+    def clear_numbers(self):
+        self.sequence_name_numbers.clear()
+        self.lbound_numbers.clear()
+        self.ubound_numbers.clear()
+        self.n_groups_numbers.clear()
+        self.n_elements_numbers.clear()
+        self.radiobutton_asc_numbers.setChecked(True)
+        self.radiobutton_desc_numbers.setChecked(False)
+
+    def generate_dates(self):
+        pass
+
+    def clear_dates(self):
+        self.sequence_name_dates.clear()
+        self.label_dates_lbound.clear()
+        self.label_dates_ubound.clear()
+        self.exclude_dates.clearMask()
+        self.n_groups_dates.clear()
+        self.n_elements_dates.clear()
+        self.radiobutton_asc_dates.setChecked(True)
+        self.radiobutton_desc_dates.setChecked(False)
 
 
 class App(QtWidgets.QApplication):

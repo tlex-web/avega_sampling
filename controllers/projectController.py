@@ -16,8 +16,8 @@ class ProjectController:
         else:
             self.view.show_error("Failed to add project")
 
-    def update_project(self, project_id, name):
-        if self.model.update_project(project_id, name):
+    def update_project(self, project_id, name, user_id):
+        if self.model.update_project(project_id, name, user_id):
             self.view.show_message("Project updated successfully")
         else:
             self.view.show_error("Failed to update project")

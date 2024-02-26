@@ -1,9 +1,10 @@
 import requests
 import json
 
-from utils.Logger import Logger
+from config import ENV
+from utils.Logger import Logger, LogEnvironment
 
-log = Logger()
+log = Logger(True if ENV == "Development" else False)
 
 
 class FetchPublicHolidays:
@@ -42,13 +43,16 @@ class FetchPublicHolidays:
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            log.error(e)
+            log.error(e, LogEnvironment.UTILS)
             raise SystemExit(e)
 
         holidays = json.loads(response.text)
         for holiday in holidays:
             holiday["date"] = holiday["date"].replace("-", "/")
 
-        log.info(f"Public holidays for {self.year} fetched successfully.")
+        log.info(
+            f"Public holidays for {self.year} fetched successfully.",
+            LogEnvironment.UTILS,
+        )
 
         return holidays
