@@ -30,11 +30,11 @@ class PCGRNG:
         """Generates a random number in the given range
 
         Args:
-            min_val (int): _description_
-            max_val (int): _description_
+            min_val (int): The minimum value of the range (inclusive)
+            max_val (int): The maximum value of the range (inclusive)
 
         Returns:
-            int
+            int: A random number within the specified range
         """
         range_size = max_val - min_val + 1
         return min_val + self.next() % range_size
@@ -43,15 +43,15 @@ class PCGRNG:
         """Generates a sequence of unique random numbers
 
         Args:
-            min_val (int): _description_
-            max_val (int): _description_
-            length (int): _description_
+            min_val (int): The minimum value of the range (inclusive)
+            max_val (int): The maximum value of the range (inclusive)
+            length (int): The length of the sequence
 
         Raises:
-            ValueError
+            ValueError: If the length of the sequence exceeds the number of unique values in the range
 
         Returns:
-            list[int]
+            list[int]: A list of unique random numbers within the specified range
         """
         if length > (max_val - min_val + 1):
             raise ValueError(

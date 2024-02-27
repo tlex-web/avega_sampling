@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'SeedWindow.ui'
+# Form implementation generated from reading ui file 'view/ui/SeedWindow.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -14,7 +14,7 @@ class Ui_Form(object):
         Form.setObjectName("Form")
         Form.resize(456, 328)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/assets/icons/AVEGA-Favicon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap(":/assets/icons/AVEGA-Favicon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         Form.setWindowIcon(icon)
         self.groupBox = QtWidgets.QGroupBox(parent=Form)
         self.groupBox.setGeometry(QtCore.QRect(20, 20, 411, 251))

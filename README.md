@@ -22,19 +22,17 @@ Random number, random date and monetary unit sampling application
 5. The sample will be generated in the same folder as the Executable
 
 ## Info 
-You can save the parameters and the random seed you used to create samples in a ``config.json`` file. The application will read the file and use the parameters and seed to generate the sample. The file should be in the same folder as the Executable and should have the following format:
+You can save the parameters and the random seed you used to create samples in a ``config.ini`` file. The application will read the file and use the parameters and seed to generate the sample. The file should be in the same folder as the Executable and should have the following format:
 
-```json
-{
-    "seed": 123456,
-    "parameters": {
-        "type": "date",
-        "start_date": "2020-01-01",
-        "end_date": "2020-12-31",
-        "number_of_samples": 10,
-        "output_file": "sample.csv"
-    }
-}
+```ini
+[ENVIRONMENT]
+ENV = "PROD"
+
+[DATABASE]
+DB_FILENAME = "database.db"
+DB_TYPE = "qsqlite"
+DB_NAME = "Sampling Database"
+
 ```
 
 ## Contributing

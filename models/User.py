@@ -7,6 +7,7 @@ log = Logger(True if ENV == "Development" else False)
 
 
 class User:
+    """Represents a user in the system."""
 
     def create_user(self, username: str):
         """Create a new user in the database

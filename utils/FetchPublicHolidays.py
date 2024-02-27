@@ -12,17 +12,25 @@ class FetchPublicHolidays:
         """Fetch dates of public holidays in Luxembourg for a given year and return them as a list
 
         Args:
-            year (int): _description_
+            year (int): The year for which to fetch the public holidays
+
+        Raises:
+            ValueError: If the year is not a valid integer or is outside the range of 2000 to 2100
         """
         self.year = self.validate_year(year)
 
     def validate_year(self, year: int):
         """Validate the year
 
-        Raises:
-            ValueError: _description_
-        """
+        Args:
+            year (int): The year to validate
 
+        Returns:
+            int: The validated year
+
+        Raises:
+            ValueError: If the year is not a valid integer or is outside the range of 2000 to 2100
+        """
         if year and isinstance(year, int):
             if year < 2000 or year > 2100:
                 raise ValueError("Year must be between 2000 and 2100.")
@@ -35,7 +43,8 @@ class FetchPublicHolidays:
         """Fetch the public holidays from the API and reformat the dates
 
         Returns:
-            list[dict]: List of public holidays
+            list[dict]: List of public holidays, where each holiday is represented as a dictionary
+                        with keys 'date', 'name', 'localName', 'countryCode', and 'fixed'
         """
         try:
             response = requests.get(

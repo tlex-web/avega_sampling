@@ -4,6 +4,8 @@ from PyQt6 import QtWidgets
 from view.MainWindow import Ui_MainWindow
 from view.OutputWindow import Ui_MainWindow as Ui_OutputWindow
 from view.SeedWindow import Ui_Form as Ui_SeedWindow
+from view.HelpWindow import Ui_MainWindow as Ui_HelpWindow
+from view.LoadingWindow import Ui_Form as Ui_LoadingWindow
 
 from controllers.userController import UserController
 from controllers.seedController import SeedController
@@ -34,7 +36,27 @@ class SeedWindow(QtWidgets.QWidget, Ui_SeedWindow):
         self.setupUi(self)
 
 
+class HelpWindow(QtWidgets.QWidget, Ui_HelpWindow):
+    def __init__(self, *args, obj=None, **kwargs):
+        super(HelpWindow, self).__init__(*args, **kwargs)
+
+        self.setupUi(self)
+
+
+class LoadingWindow(QtWidgets.QWidget, Ui_LoadingWindow):
+    def __init__(self, *args, obj=None, **kwargs):
+        super(LoadingWindow, self).__init__(*args, **kwargs)
+
+        self.setupUi(self)
+
+
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    """
+    The main window of the application.
+
+    Inherits from QtWidgets.QMainWindow and Ui_MainWindow.
+    """
+
     def __init__(self, *args, obj=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
@@ -45,6 +67,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # setup the seed window
         self.seed_window = SeedWindow()
 
+        # setup the help window
+        self.help_window = HelpWindow()
+
+        # setup the loading window
+        self.loading_window = LoadingWindow()
+
+        # setup the controllers
+        # self.user_controller = UserController(self)
+        # self.seed_controller = SeedController(self)
+        # self.project_controller = ProjectController(self)
+
+        # connect the signals and slots to handle events on the UI
+
+        # MainWindow signals and slots
         self.pushButton_new_file.clicked.connect(self.new_file)
         self.pushButton_save_as.clicked.connect(self.save_as)
         self.pushButton_save.clicked.connect(self.save)
@@ -52,16 +88,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_paste.clicked.connect(self.paste)
         self.pushButton_help.clicked.connect(self.help)
 
+        # SeedWindow signals
         self.btn_seed_numbers.clicked.connect(self.set_number_seed)
         self.btn_seed_dates.clicked.connect(self.set_dates_seed)
 
+        # Number generation tab signals and slots
         self.btn_generate_numbers.clicked.connect(self.generate_numbers)
         self.btn_seed_numbers.clicked.connect(self.generate_seed)
         self.btn_clear_numbers.clicked.connect(self.clear_numbers)
 
+        # Date generation tab signals and slots
         self.btn_generate_dates.clicked.connect(self.generate_dates)
         self.btn_seed_dates.clicked.connect(self.generate_seed)
         self.btn_clear_dates.clicked.connect(self.clear_dates)
+
+        # Monetary Unit Sampling tab signals and slots
+        #############################
+        # To be implemented later
+        #############################
 
     def new_file(self):
         pass
@@ -79,21 +123,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         pass
 
     def help(self):
-        pass
+        """
+        Shows or hides the help window based on its current visibility state.
+        """
+        if self.help_window.isVisible():
+            self.help_window.close()
+        else:
+            self.help_window.show()
 
     def set_number_seed(self):
+        """
+        Shows or hides the seed window for number generation based on its current visibility state.
+        """
         if self.seed_window.isVisible():
             self.seed_window.close()
         else:
             self.seed_window.show()
 
     def set_dates_seed(self):
+        """
+        Shows or hides the seed window for date generation based on its current visibility state.
+        """
         if self.seed_window.isVisible():
             self.seed_window.close()
         else:
             self.seed_window.show()
 
     def generate_numbers(self):
+        """
+        Generates random numbers based on the input fields and displays them in the output window.
+        """
         # get the values from the input fields and convert them to the correct type
         sequence_name = (
             self.sequence_name_numbers.text()
@@ -162,12 +221,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.output_window.output_element.append("")
 
     def generate_seed(self):
-        """Generates a seed for the random number generator"""
+        """
+        Generates a seed for the random number generator.
+        """
         pass
 
     def set_seed(self):
-        """Sets the seed for the random number generator"""
-
+        """
+        Sets the seed for the random number generator.
+        """
         seed_window = SeedWindow()
         seed_window.show()
 
@@ -191,6 +253,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         return pcg
 
     def clear_numbers(self):
+        """
+        Clears the input fields for number generation.
+        """
         self.sequence_name_numbers.clear()
         self.lbound_numbers.clear()
         self.ubound_numbers.clear()
@@ -203,6 +268,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         pass
 
     def clear_dates(self):
+        """
+        Clears the input fields for date generation.
+        """
         self.sequence_name_dates.clear()
         self.label_dates_lbound.clear()
         self.label_dates_ubound.clear()

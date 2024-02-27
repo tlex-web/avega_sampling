@@ -2,6 +2,9 @@ from PyQt6.QtSql import QSqlQuery
 
 
 class Project:
+    """
+    Represents a project in the database.
+    """
 
     def create_project(self, name: str, user_id: int) -> bool:
         """Create a new project in the database
@@ -9,6 +12,9 @@ class Project:
         Args:
             name (str): Name of the project
             user_id (int): User id
+
+        Returns:
+            bool: True if the project is created successfully, False otherwise.
         """
 
         query = QSqlQuery()
@@ -24,6 +30,10 @@ class Project:
         Args:
             name (str): New project name
             project_id (int): Project id
+            user_id (int): User id
+
+        Returns:
+            bool: True if the project is updated successfully, False otherwise.
         """
 
         query = QSqlQuery()
@@ -41,6 +51,9 @@ class Project:
 
         Args:
             project_id (int): Project id
+
+        Returns:
+            bool: True if the project is deleted successfully, False otherwise.
         """
 
         query = QSqlQuery()
@@ -54,6 +67,9 @@ class Project:
 
         Args:
             project_id (int): Project id
+
+        Returns:
+            dict | None: A dictionary representing the project if found, None otherwise.
         """
 
         query = QSqlQuery()

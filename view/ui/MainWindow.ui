@@ -16,12 +16,12 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</iconset>
+    <normaloff>:/assets/icons/AVEGA-Favicon.ico</normaloff>:/assets/icons/AVEGA-Favicon.ico</iconset>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextUnderIcon</enum>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="QWidget" name="company_wrapper">
    <widget class="QTabWidget" name="sampling_types">
     <property name="geometry">
      <rect>
@@ -488,7 +488,7 @@
          <widget class="QDateEdit" name="lbound_dates">
           <property name="date">
            <date>
-            <year>2023</year>
+            <year>2000</year>
             <month>1</month>
             <day>1</day>
            </date>
@@ -499,7 +499,7 @@
          <widget class="QDateEdit" name="ubound_dates">
           <property name="date">
            <date>
-            <year>2023</year>
+            <year>2000</year>
             <month>1</month>
             <day>1</day>
            </date>
@@ -777,7 +777,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QFrame" name="action_box">
+   <widget class="QFrame" name="legend_wrapper">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -804,7 +804,7 @@
        <height>28</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="action_box_2">
+     <layout class="QHBoxLayout" name="legend">
       <item>
        <widget class="QPushButton" name="pushButton_new_file">
         <property name="toolTip">
@@ -815,7 +815,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/new_file.png</normaloff>:/icons/assets/icons/new_file.png</iconset>
+          <normaloff>:/assets/icons/new_file.png</normaloff>:/assets/icons/new_file.png</iconset>
         </property>
         <property name="autoDefault">
          <bool>false</bool>
@@ -838,7 +838,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
+          <normaloff>:/assets/icons/folder.png</normaloff>:/assets/icons/folder.png</iconset>
         </property>
        </widget>
       </item>
@@ -852,7 +852,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/folder.png</normaloff>:/icons/assets/icons/folder.png</iconset>
+          <normaloff>:/assets/icons/save.png</normaloff>:/assets/icons/save.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -885,7 +885,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/copy.png</normaloff>:/icons/assets/icons/copy.png</iconset>
+          <normaloff>:/assets/icons/copy.png</normaloff>:/assets/icons/copy.png</iconset>
         </property>
        </widget>
       </item>
@@ -899,7 +899,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/paste.png</normaloff>:/icons/assets/icons/paste.png</iconset>
+          <normaloff>:/assets/icons/paste.png</normaloff>:/assets/icons/paste.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -932,179 +932,11 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/icons/assets/icons/q_mark.png</normaloff>:/icons/assets/icons/q_mark.png</iconset>
+          <normaloff>:/assets/icons/q_mark.png</normaloff>:/assets/icons/q_mark.png</iconset>
         </property>
        </widget>
       </item>
      </layout>
-    </widget>
-    <widget class="QFrame" name="legend">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>761</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <widget class="QWidget" name="horizontalLayoutWidget_8">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>731</width>
-        <height>28</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="legend_btn">
-       <item>
-        <widget class="QPushButton" name="pushButton_new_file_2">
-         <property name="toolTip">
-          <string>new file</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/new_file.png</normaloff>:/icons/assets/icons/new_file.png</iconset>
-         </property>
-         <property name="autoDefault">
-          <bool>false</bool>
-         </property>
-         <property name="default">
-          <bool>false</bool>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_save_as_2">
-         <property name="toolTip">
-          <string>save as</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/save.png</normaloff>:/icons/assets/icons/save.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_save_2">
-         <property name="toolTip">
-          <string>save</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/folder.png</normaloff>:/icons/assets/icons/folder.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_8">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_copy_2">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="toolTip">
-          <string>copy</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/copy.png</normaloff>:/icons/assets/icons/copy.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QPushButton" name="pushButton_paste_2">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="toolTip">
-          <string>paste</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/paste.png</normaloff>:/icons/assets/icons/paste.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_9">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_help_2">
-         <property name="toolTip">
-          <string>help</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/icons/assets/icons/q_mark.png</normaloff>:/icons/assets/icons/q_mark.png</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget_4">
@@ -1186,7 +1018,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <zorder>action_box</zorder>
+   <zorder>legend_wrapper</zorder>
    <zorder>sampling_types</zorder>
    <zorder>line</zorder>
    <zorder>horizontalLayoutWidget_4</zorder>

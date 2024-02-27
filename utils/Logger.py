@@ -18,7 +18,12 @@ class LogEnvironment(Enum):
 
 class Logger:
     def __init__(self, isDev: bool):
-        """Logger class for logging to a file."""
+        """
+        Logger class for logging to a file.
+
+        Args:
+            isDev (bool): Flag indicating whether the logger is in development mode.
+        """
         self.isdev = isDev
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.DEBUG if self.isdev else logging.INFO)

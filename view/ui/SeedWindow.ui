@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">
-    <normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</normaloff>:/icons/assets/icons/AVEGA-Favicon.ico</iconset>
+    <normaloff>:/assets/icons/AVEGA-Favicon.ico</normaloff>:/assets/icons/AVEGA-Favicon.ico</iconset>
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
