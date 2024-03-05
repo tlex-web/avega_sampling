@@ -33,3 +33,7 @@ ENV = config["SETUP"]["ENV"]
 DB_FILENAME = config["DATABASE"]["FILENAME"]
 DB_TYPE = config["DATABASE"]["DB_TYPE"]
 DB_NAME = config["DATABASE"]["DB_NAME"]
+
+# Set configuration parameters
+
+IS_DEV = True if ENV == "Development" else False

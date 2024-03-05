@@ -8,8 +8,10 @@ from view.HelpWindow import Ui_MainWindow as Ui_HelpWindow
 from view.LoadingWindow import Ui_Form as Ui_LoadingWindow
 
 from controllers.userController import UserController
-from controllers.seedController import SeedController
 from controllers.projectController import ProjectController
+from controllers.numberSequenceController import NumberSequenceController
+from controllers.datesSequenceController import DatesSequenceController
+from controllers.windowController import WindowController
 
 from utils.PCGRNG import PCGRNG
 from db.Database import Database
@@ -67,218 +69,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # setup the seed window
         self.seed_window = SeedWindow()
 
-        # setup the help window
-        self.help_window = HelpWindow()
-
         # setup the loading window
         self.loading_window = LoadingWindow()
 
         # setup the controllers
         # self.user_controller = UserController(self)
-        # self.seed_controller = SeedController(self)
         # self.project_controller = ProjectController(self)
+        # self.number_sequence_controller = NumberSequenceController(self)
+        # self.dates_sequence_controller = DatesSequenceController(self)
 
         # connect the signals and slots to handle events on the UI
 
-        # MainWindow signals and slots
-        self.pushButton_new_file.clicked.connect(self.new_file)
-        self.pushButton_save_as.clicked.connect(self.save_as)
-        self.pushButton_save.clicked.connect(self.save)
-        self.pushButton_copy.clicked.connect(self.copy)
-        self.pushButton_paste.clicked.connect(self.paste)
-        self.pushButton_help.clicked.connect(self.help)
-
-        # SeedWindow signals
-        self.btn_seed_numbers.clicked.connect(self.set_number_seed)
-        self.btn_seed_dates.clicked.connect(self.set_dates_seed)
-
-        # Number generation tab signals and slots
-        self.btn_generate_numbers.clicked.connect(self.generate_numbers)
-        self.btn_seed_numbers.clicked.connect(self.generate_seed)
-        self.btn_clear_numbers.clicked.connect(self.clear_numbers)
-
-        # Date generation tab signals and slots
-        self.btn_generate_dates.clicked.connect(self.generate_dates)
-        self.btn_seed_dates.clicked.connect(self.generate_seed)
-        self.btn_clear_dates.clicked.connect(self.clear_dates)
+        # Window signals
+        self.window_controller = WindowController(
+            self.pushButton_new_file,
+            self.pushButton_save_as,
+            self.pushButton_save,
+            self.pushButton_copy,
+            self.pushButton_paste,
+            self.pushButton_help,
+        )
 
         # Monetary Unit Sampling tab signals and slots
         #############################
         # To be implemented later
         #############################
-
-    def new_file(self):
-        pass
-
-    def save_as(self):
-        pass
-
-    def save(self):
-        pass
-
-    def copy(self):
-        pass
-
-    def paste(self):
-        pass
-
-    def help(self):
-        """
-        Shows or hides the help window based on its current visibility state.
-        """
-        if self.help_window.isVisible():
-            self.help_window.close()
-        else:
-            self.help_window.show()
-
-    def set_number_seed(self):
-        """
-        Shows or hides the seed window for number generation based on its current visibility state.
-        """
-        if self.seed_window.isVisible():
-            self.seed_window.close()
-        else:
-            self.seed_window.show()
-
-    def set_dates_seed(self):
-        """
-        Shows or hides the seed window for date generation based on its current visibility state.
-        """
-        if self.seed_window.isVisible():
-            self.seed_window.close()
-        else:
-            self.seed_window.show()
-
-    def generate_numbers(self):
-        """
-        Generates random numbers based on the input fields and displays them in the output window.
-        """
-        # get the values from the input fields and convert them to the correct type
-        sequence_name = (
-            self.sequence_name_numbers.text()
-            if self.sequence_name_numbers.text() != ""
-            else "sequence 1"
-        )
-        l_bound = int(self.lbound_numbers.text())
-        u_bound = int(self.ubound_numbers.text())
-
-        n_groups = int(self.n_groups_numbers.text())
-        n_elements = int(self.n_elements_numbers.text())
-
-        # check if the values are valid
-        if l_bound >= u_bound:
-            self.label_numbers_lbound.setStyleSheet("color: red")
-            self.label_numbers_ubound.setStyleSheet("color: red")
-
-            return
-        else:
-            self.label_numbers_lbound.setStyleSheet("color: black")
-            self.label_numbers_ubound.setStyleSheet("color: black")
-
-        if n_groups < 1:
-            self.label_dates_n_groups.setStyleSheet("color: red")
-
-            return
-        else:
-            self.label_dates_n_groups.setStyleSheet("color: black")
-
-        if n_elements < 1:
-            self.label_dates_n_elements.setStyleSheet("color: red")
-
-            return
-        else:
-            self.label_dates_n_elements.setStyleSheet("color: black")
-
-        pcg = PCGRNG(initstate=123)
-
-        numbers = pcg.get_unique_random_sequence(l_bound, u_bound, n_elements)
-
-        if n_groups > 1:
-            numbers = sorted(numbers)
-            numbers = [numbers[i::n_groups] for i in range(n_groups)]
-        else:
-            numbers = [numbers]
-
-        if self.radiobutton_asc_numbers.isChecked():
-            numbers = [sorted(group) for group in numbers]
-        elif self.radiobutton_desc_numbers.isChecked():
-            numbers = [sorted(group, reverse=True) for group in numbers]
-        else:
-            numbers = [group for group in numbers]
-
-        if self.output_window.isVisible():
-            self.output_window.close()
-        else:
-            self.output_window.show()
-
-        # print the numbers
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append(sequence_name)
-        self.output_window.output_element.append("")
-        for i, group in enumerate(numbers):
-            self.output_window.output_element.append(f"Group {i+1}:")
-            self.output_window.output_element.append(str(group))
-            self.output_window.output_element.append("")
-
-    def generate_seed(self):
-        """
-        Generates a seed for the random number generator.
-        """
-        pass
-
-    def set_seed(self):
-        """
-        Sets the seed for the random number generator.
-        """
-        seed_window = SeedWindow()
-        seed_window.show()
-
-        # determine the selected option and set the seed accordingly
-        if seed_window.radio_gen_new_seed.isChecked():
-            seed = seed_window.gen_new_seed.value()
-        elif seed_window.radio_old_seed.isChecked():
-            seed = seed_window.old_seed.value()
-        elif seed_window.radio_con_old_seed.isChecked():
-            seed = seed_window.con_old_seed.value()
-        else:
-            seed = None
-
-        pcg = None
-
-        if seed is not None:
-            pcg = PCGRNG(initstate=seed)
-        else:
-            pcg = PCGRNG()
-
-        return pcg
-
-    def clear_numbers(self):
-        """
-        Clears the input fields for number generation.
-        """
-        self.sequence_name_numbers.clear()
-        self.lbound_numbers.clear()
-        self.ubound_numbers.clear()
-        self.n_groups_numbers.clear()
-        self.n_elements_numbers.clear()
-        self.radiobutton_asc_numbers.setChecked(True)
-        self.radiobutton_desc_numbers.setChecked(False)
-
-    def generate_dates(self):
-        pass
-
-    def clear_dates(self):
-        """
-        Clears the input fields for date generation.
-        """
-        self.sequence_name_dates.clear()
-        self.label_dates_lbound.clear()
-        self.label_dates_ubound.clear()
-        self.exclude_dates.clearMask()
-        self.n_groups_dates.clear()
-        self.n_elements_dates.clear()
-        self.radiobutton_asc_dates.setChecked(True)
-        self.radiobutton_desc_dates.setChecked(False)
 
 
 class App(QtWidgets.QApplication):
@@ -289,5 +104,6 @@ class App(QtWidgets.QApplication):
         self.window.show()
 
 
-app = App(sys.argv)
-sys.exit(app.exec())
+if __name__ == "__main__":
+    app = App(sys.argv)
+    sys.exit(app.exec())
