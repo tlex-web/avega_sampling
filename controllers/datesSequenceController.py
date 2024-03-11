@@ -5,8 +5,8 @@ from PyQt6.QtWidgets import (
     QSpinBox,
     QLineEdit,
     QGroupBox,
+    QDateEdit,
 )
-from app import OutputWindow, SeedWindow
 from utils.PCGRNG import PCGRNG
 
 
@@ -18,8 +18,8 @@ class DatesSequenceController:
         btn_seed_dates: QPushButton,
         btn_clear_dates: QPushButton,
         sequence_name: QLineEdit,
-        l_bound: QSpinBox,
-        u_bound: QSpinBox,
+        l_bound: QDateEdit,
+        u_bound: QDateEdit,
         label_lbound: QLabel,
         label_ubound: QLabel,
         exclude_dates: QGroupBox,
@@ -29,8 +29,8 @@ class DatesSequenceController:
         label_n_elements: QLabel,
         ascending_order: QRadioButton,
         descending_order: QRadioButton,
-        output_window: OutputWindow,
-        seed_window: SeedWindow,
+        output_window,
+        seed_window,
     ) -> None:
         """
         Initializes the number sequence controller.

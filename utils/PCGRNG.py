@@ -12,6 +12,11 @@ class PCGRNG:
         self.seed(initstate)
 
     def seed(self, seed_value: int):
+        """Seed the random number generator
+
+        Args:
+            seed_value (int): The seed value
+        """
         self.state = 0
         self.step()
         self.state += seed_value

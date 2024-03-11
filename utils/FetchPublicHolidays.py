@@ -1,10 +1,10 @@
 import requests
 import json
 
-from config import ENV
+from config import IS_DEV
 from utils.Logger import Logger, LogEnvironment
 
-log = Logger(True if ENV == "Development" else False)
+log = Logger(IS_DEV)
 
 
 class FetchPublicHolidays:

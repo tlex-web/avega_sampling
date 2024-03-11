@@ -35,7 +35,7 @@
      <enum>Qt::LeftToRight</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="documentMode">
      <bool>false</bool>
@@ -1045,15 +1045,6 @@
     <addaction name="actionSave_as"/>
     <addaction name="separator"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionUndo"/>
-    <addaction name="separator"/>
-    <addaction name="actionRedo"/>
-    <addaction name="separator"/>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
@@ -1076,42 +1067,62 @@
     <addaction name="separator"/>
    </widget>
    <addaction name="menuSave"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuRandom"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionAbout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
   </action>
   <action name="actionHow_to">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>How to</string>
    </property>
   </action>
   <action name="actionUndo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
   </action>
   <action name="actionRedo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Redo</string>
    </property>
   </action>
   <action name="actionMagnification">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Magnification</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
   </action>
   <action name="actionSave_as">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Save as</string>
    </property>

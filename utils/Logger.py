@@ -2,6 +2,10 @@ import os
 import logging
 from datetime import datetime
 from enum import Enum
+import sys
+import traceback
+from types import TracebackType
+from typing import Type
 
 
 class LogEnvironment(Enum):
@@ -42,7 +46,7 @@ class Logger:
         self.file_handler.setLevel(logging.DEBUG)
 
         # Create a console handler
-        self.console_handler = logging.StreamHandler()
+        self.console_handler = logging.StreamHandler(stream=sys.stdout)
         self.console_handler.setLevel(logging.DEBUG if self.isdev else logging.INFO)
 
         # Create a formatter and set the formatter for the handlers
@@ -55,6 +59,36 @@ class Logger:
         # Add the handlers to the logger
         self.logger.addHandler(self.file_handler)
         self.logger.addHandler(self.console_handler)
+
+        """
+        Set the custom exception handler to log uncaught exceptions.
+
+        Handle uncaught exceptions to prevent the application from crashing and log the exception to the log file and stderr (if in development mode) for later debugging.
+        """
+        sys.excepthook = self.handle_exception
+
+    def handle_exception(
+        self,
+        exc_type: Type[BaseException],
+        exc_value: BaseException,
+        exc_traceback: TracebackType | None,
+    ):
+        """Handle uncaught exceptions.
+
+        Args:
+            exc_type (Type[BaseException]): The type of the exception
+            exc_value (BaseException): The exception instance
+            exc_traceback (TracebackType | None): The traceback
+        """
+
+        tb = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+
+        # Log the exception
+        self.logger.error(tb, extra={"env": LogEnvironment.MAIN.value})
+
+        # If the application is in development mode, also print the traceback to stderr
+        if self.isdev:
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
     def log(self, message: str, env: LogEnvironment):
         """Log a message to the log file."""

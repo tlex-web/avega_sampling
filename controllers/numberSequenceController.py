@@ -1,5 +1,4 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
-from app import OutputWindow, SeedWindow
 from utils.PCGRNG import PCGRNG
 
 
@@ -21,8 +20,8 @@ class NumberSequenceController:
         label_n_elements: QLabel,
         ascending_order: QRadioButton,
         descending_order: QRadioButton,
-        output_window: OutputWindow,
-        seed_window: SeedWindow,
+        output_window,
+        seed_window,
     ) -> None:
         """
         Initializes the number sequence controller.

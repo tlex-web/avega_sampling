@@ -1,7 +1,5 @@
 from PyQt6.QtWidgets import QPushButton
 
-from app import HelpWindow
-
 
 class WindowController:
     def __init__(
@@ -12,6 +10,7 @@ class WindowController:
         btn_copy: QPushButton,
         btn_paste: QPushButton,
         btn_help: QPushButton,
+        help_window,
     ) -> None:
 
         self.btn_new_file = btn_new_file
@@ -20,7 +19,7 @@ class WindowController:
         self.btn_copy = btn_copy
         self.btn_paste = btn_paste
         self.btn_help = btn_help
-        self.help_window = HelpWindow()
+        self.help_window = help_window
 
         # Setup signals and slots for number sequence-related actions
         btn_new_file.clicked.connect(self.new_file)

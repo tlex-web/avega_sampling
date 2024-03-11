@@ -1,7 +1,10 @@
 <RCC>
   <qresource>
+    <file>../assets/icons/AVEGA-Revision (Medium).jpg</file>
     <file>../assets/icons/AVEGA-Favicon.ico</file>
     <file>../assets/icons/AVEGA-Revision.jpg</file>
+    <file>../assets/icons/AVEGA-Revision (Large).jpg</file>
+    <file>../assets/icons/AVEGA-Revision (Small).jpg</file>
     <file>../assets/icons/copy.png</file>
     <file>../assets/icons/folder.png</file>
     <file>../assets/icons/new_file.png</file>

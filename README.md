@@ -9,8 +9,59 @@
 ## Description
 Random number, random date and monetary unit sampling application
 
+## Development
+The application was developed to be used in a Windows environment.
+
+The Frontend was developed using the PySide6 Designer to quickly design the components of the UI. To open the Designer, the following command was used:
+
+```bash
+pyside6-designer
+``` 
+
+In order to export the UI files of the different components to a Python file, the following command was used:
+
+```bash
+pyuic6 %Filename%.ui -o %Filename%.py
+```
+
+The Designer allows to create a resource file that can be used to include images in the UI. The resource file can be converted to a Python file using the following command:
+
+```bash
+pyside6-rcc -o resources.py view/ui/resources.qrc
+```
+
+Note: The resource file needs to be in the same directory as the app.py file in order to import the resources.
+
+## Requirements
+1. Python 3.11.8
+2. PyQt6 6.2.2
+3. PySide6 6.2.2
+4. requests 2.26.0
+5. PyInstaller 4.2
+
+## Tests
+The application was tested in a Windows 11 environment using unit tests with *pytest* except for the UI. To run the tests, the following command was used:
+
+```bash
+pytest -v -s tests
+```
+
+You can also create a coverage report using the following command:
+
+```bash
+coverage run -m pytest
+```
+
+To see the coverage report, use the following command:
+
+```bash
+coverage html
+```
+
+The UI was tested manually to ensure that the components were working as expected.
+
 ## Installation
-1. Create an Executable using pyinstaller
+1. Create an Executable using *pyinstaller*
 2. Copy the Executable to the folder where you want to use it
 3. Run the Executable
 
