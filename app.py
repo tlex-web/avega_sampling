@@ -9,6 +9,7 @@ from view.HelpWindow import Ui_MainWindow as Ui_HelpWindow
 from view.LoadingWindow import Ui_Form as Ui_LoadingWindow
 from view.AboutWindow import Ui_Form as Ui_AboutWindow
 
+from controllers.seedController import SeedController
 from controllers.userController import UserController
 from controllers.projectController import ProjectController
 from controllers.numberSequenceController import NumberSequenceController
@@ -135,33 +136,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.label_numbers_n_groups,
             self.n_elements_numbers,
             self.label_numbers_n_elements,
+            self.radiobutton_org_numbers,
             self.radiobutton_asc_numbers,
             self.radiobutton_desc_numbers,
             self.output_window,
             self.seed_window,
         )
 
+        # Dates Sequence tab signals
+        # self.dates_sequence_controller = DatesSequenceController(
+        #     self.btn_generate_dates,
+        #     self.btn_seed_dates,
+        #     self.btn_clear_dates,
+        #     self.sequence_name_dates,
+        #     self.lbound_dates,
+        #     self.ubound_dates,
+        #     self.label_dates_lbound,
+        #     self.label_dates_ubound,
+        #     self.exclude_dates,
+        #     self.n_groups_dates,
+        #     self.label_dates_n_groups,
+        #     self.n_elements_dates,
+        #     self.label_dates_n_elements,
+        #     self.radiobutton_org_dates,
+        #     self.radiobutton_asc_dates,
+        #     self.radiobutton_desc_dates,
+        #     self.output_window,
+        #     self.seed_window,
+        # )
 
-# Dates Sequence tab signals
-# self.dates_sequence_controller = DatesSequenceController(
-#     self.btn_generate_dates,
-#     self.btn_seed_dates,
-#     self.btn_clear_dates,
-#     self.sequence_name_dates,
-#     self.lbound_dates,
-#     self.ubound_dates,
-#     self.label_dates_lbound,
-#     self.label_dates_ubound,
-#     self.exclude_dates,
-#     self.n_groups_dates,
-#     self.label_dates_n_groups,
-#     self.n_elements_dates,
-#     self.label_dates_n_elements,
-#     self.radiobutton_asc_dates,
-#     self.radiobutton_desc_dates,
-#     self.output_window,
-#     self.seed_window,
-# )
+        # Seed Window signals
+        self.seed_controller = SeedController(self.seed_window)
+
 
 # Monetary Unit Sampling tab signals and slots
 #############################

@@ -18,6 +18,7 @@ class NumberSequenceController:
         label_n_groups: QLabel,
         n_elements: QSpinBox,
         label_n_elements: QLabel,
+        original_order: QRadioButton,
         ascending_order: QRadioButton,
         descending_order: QRadioButton,
         output_window,
@@ -38,6 +39,7 @@ class NumberSequenceController:
         self.label_n_groups = label_n_groups
         self.n_elements = n_elements
         self.label_n_elements = label_n_elements
+        self.original_order = original_order
         self.ascending_order = ascending_order
         self.descending_order = descending_order
         self.output_window = output_window
@@ -94,11 +96,22 @@ class NumberSequenceController:
         Clears the input fields for number generation.
         """
         self.sequence_name.clear()
+        self.sequence_name.setPlaceholderText("sequence 1")
+
         self.l_bound.clear()
+        self.l_bound.setValue(0)
+
         self.u_bound.clear()
+        self.u_bound.setValue(0)
+
         self.n_groups.clear()
+        self.n_groups.setValue(1)
+
         self.n_elements.clear()
-        self.ascending_order.setChecked(True)
+        self.n_elements.setValue(0)
+
+        self.original_order.setChecked(True)
+        self.ascending_order.setChecked(False)
         self.descending_order.setChecked(False)
 
     def generate_numbers(self):
