@@ -48,20 +48,26 @@ class FetchPublicHolidays:
         """
         try:
             response = requests.get(
-                f"https://date.nager.at/api/v2/publicholidays/{self.year}/LU"
+                f"https://date.nager.at/api/v3/publicholidays/{self.year}/LU"
             )
             response.raise_for_status()
+
+            holidays = json.loads(response.text)
+            for holiday in holidays:
+                holiday["date"] = holiday["date"].replace("-", "/")
+
+            log.info(
+                f"Public holidays for {self.year} fetched successfully.",
+                LogEnvironment.UTILS,
+            )
+            return holidays
+
         except requests.exceptions.HTTPError as e:
             log.error(e, LogEnvironment.UTILS)
-            raise SystemExit(e)
-
-        holidays = json.loads(response.text)
-        for holiday in holidays:
-            holiday["date"] = holiday["date"].replace("-", "/")
-
-        log.info(
-            f"Public holidays for {self.year} fetched successfully.",
-            LogEnvironment.UTILS,
-        )
-
-        return holidays
+            return None
+        except requests.exceptions.RequestException as e:
+            log.error(e, LogEnvironment.UTILS)
+            return None
+        except Exception as e:
+            log.error(e, LogEnvironment.UTILS)
+            return None
