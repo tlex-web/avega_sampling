@@ -131,6 +131,7 @@ class NumberSequenceController:
         n_elements = int(self.n_elements.text())
 
         # check if the values are valid
+        
         if l_bound >= u_bound:
             self.label_lbound.setStyleSheet("color: red")
             self.label_ubound.setStyleSheet("color: red")

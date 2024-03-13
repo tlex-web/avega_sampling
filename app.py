@@ -23,7 +23,7 @@ from utils.PCGRNG import PCGRNG
 from db.Database import Database
 from config import DB_FILENAME, IS_DEV
 
-import resources  # needed for assets and correct packaging
+import resources  # ignore: needed for assets and correct packaging
 
 
 # create global database object
@@ -33,35 +33,35 @@ log = Logger(IS_DEV)
 
 
 class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(OutputWindow, self).__init__(*args, **kwargs)
 
         self.setupUi(self)
 
 
 class SeedWindow(QtWidgets.QWidget, Ui_SeedWindow):
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(SeedWindow, self).__init__(*args, **kwargs)
 
         self.setupUi(self)
 
 
 class HelpWindow(QtWidgets.QWidget, Ui_HelpWindow):
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(HelpWindow, self).__init__(*args, **kwargs)
 
         self.setupUi(self)
 
 
 class LoadingWindow(QtWidgets.QWidget, Ui_LoadingWindow):
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(LoadingWindow, self).__init__(*args, **kwargs)
 
         self.setupUi(self)
 
 
 class AboutWindow(QtWidgets.QWidget, Ui_AboutWindow):
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(AboutWindow, self).__init__(*args, **kwargs)
 
         self.setupUi(self)
@@ -74,7 +74,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     Inherits from QtWidgets.QMainWindow and Ui_MainWindow.
     """
 
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
