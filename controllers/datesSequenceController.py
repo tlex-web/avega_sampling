@@ -128,29 +128,41 @@ class DatesSequenceController:
         n_groups = int(self.n_groups.text())
         n_elements = int(self.n_elements.text())
 
-        # check if the values are valid
+        # Initialize a flag for valid values
+        valid_values = True
+
+        # Check if the values are valid
         if l_bound >= u_bound:
             self.label_lbound.setStyleSheet("color: red")
+            self.label_lbound.setText("Upper bound must be greater than lower bound")
             self.label_ubound.setStyleSheet("color: red")
-
-            return
+            self.label_ubound.setText("Upper bound must be greater than lower bound")
+            valid_values = False
         else:
             self.label_lbound.setStyleSheet("color: black")
+            self.label_lbound.setText("Lower bound")
             self.label_ubound.setStyleSheet("color: black")
+            self.label_ubound.setText("Upper bound")
 
         if n_groups < 1:
             self.label_n_groups.setStyleSheet("color: red")
-
-            return
+            self.label_n_groups.setText("Number of groups must be greater than 0")
+            valid_values = False
         else:
             self.label_n_groups.setStyleSheet("color: black")
+            self.label_n_groups.setText("Number of groups")
 
         if n_elements < 1:
             self.label_n_elements.setStyleSheet("color: red")
-
-            return
+            self.label_n_elements.setText("Number of elements must be greater than 0")
+            valid_values = False
         else:
             self.label_n_elements.setStyleSheet("color: black")
+            self.label_n_elements.setText("Number of elements")
+
+        # If any of the values are invalid, return
+        if not valid_values:
+            return
 
         pcg = PCGRNG(initstate=123)
 

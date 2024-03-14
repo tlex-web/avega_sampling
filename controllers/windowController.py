@@ -63,7 +63,7 @@ class WindowController:
         """
         Shows or hides the help window based on its current visibility state.
         """
-        if self.help_window.isVisible():
-            self.help_window.close()
-        else:
+        if not self.help_window.isVisible():
             self.help_window.show()
+        else:
+            self.help_window.hide()

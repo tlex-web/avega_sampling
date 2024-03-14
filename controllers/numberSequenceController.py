@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
+from PyQt6.QtCore import Qt
 from utils.PCGRNG import PCGRNG
 
 
@@ -130,30 +131,37 @@ class NumberSequenceController:
         n_groups = int(self.n_groups.text())
         n_elements = int(self.n_elements.text())
 
-        # check if the values are valid
-        
-        if l_bound >= u_bound:
-            self.label_lbound.setStyleSheet("color: red")
-            self.label_ubound.setStyleSheet("color: red")
+        # Initialize a flag for valid values
+        valid_values = True
 
-            return
+        # Check if the values are valid
+        if l_bound >= u_bound:
+            self.l_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.l_bound.setToolTip("Upper bound must be greater than lower bound")
+            self.u_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.u_bound.setToolTip("Upper bound must be greater than lower bound")
+            valid_values = False
         else:
-            self.label_lbound.setStyleSheet("color: black")
-            self.label_ubound.setStyleSheet("color: black")
+            self.l_bound.setStyleSheet("color: black; border: none;")
+            self.u_bound.setStyleSheet("color: black; border: none;")
 
         if n_groups < 1:
-            self.label_n_groups.setStyleSheet("color: red")
-
-            return
+            self.n_groups.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_groups.setToolTip("Number of groups must be greater than 0")
+            valid_values = False
         else:
-            self.label_n_groups.setStyleSheet("color: black")
+            self.n_groups.setStyleSheet("color: black; border: none;")
 
         if n_elements < 1:
-            self.label_n_elements.setStyleSheet("color: red")
-
-            return
+            self.n_elements.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_elements.setToolTip("Number of elements must be greater than 0")
+            valid_values = False
         else:
-            self.label_n_elements.setStyleSheet("color: black")
+            self.n_elements.setStyleSheet("color: black; border: none;")
+
+        # If any of the values are invalid, return
+        if not valid_values:
+            return
 
         pcg = PCGRNG(initstate=123)
 

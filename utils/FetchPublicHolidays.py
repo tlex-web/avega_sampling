@@ -39,13 +39,14 @@ class FetchPublicHolidays:
         else:
             raise ValueError("Year must be an integer.")
 
-    def get_public_holidays(self):
+    async def get_public_holidays(self):
         """Fetch the public holidays from the API and reformat the dates
 
         Returns:
             list[dict]: List of public holidays, where each holiday is represented as a dictionary
                         with keys 'date', 'name', 'localName', 'countryCode', and 'fixed'
         """
+
         try:
             response = requests.get(
                 f"https://date.nager.at/api/v3/publicholidays/{self.year}/LU"

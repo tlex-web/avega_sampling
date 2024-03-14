@@ -40,7 +40,7 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="3" column="0">
-      <widget class="QRadioButton" name="radio_con_old_seed">
+      <widget class="QRadioButton" name="radio_continue_using_seed">
        <property name="text">
         <string>Continue generating a series using a continuation seed</string>
        </property>
@@ -71,29 +71,16 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QSpinBox" name="gen_new_seed"/>
+      <widget class="QSpinBox" name="seed_input"/>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="old_seed"/>
+      <widget class="QSpinBox" name="old_seed_regenerate"/>
      </item>
      <item row="3" column="1">
-      <widget class="QSpinBox" name="con_old_seed"/>
+      <widget class="QSpinBox" name="old_seed_continue"/>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="btn_ok">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>290</y>
-     <width>75</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>OK</string>
-   </property>
   </widget>
   <widget class="Line" name="line">
    <property name="geometry">
@@ -106,6 +93,19 @@
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>290</y>
+     <width>161</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
  </widget>
