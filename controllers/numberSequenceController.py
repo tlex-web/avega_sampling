@@ -1,6 +1,9 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
 from PyQt6.QtCore import Qt
 from utils.PCGRNG import PCGRNG
+from models.Seed import Seed
+from models.User import User
+from config import SESSION_NAME
 
 
 class NumberSequenceController:
@@ -23,7 +26,6 @@ class NumberSequenceController:
         ascending_order: QRadioButton,
         descending_order: QRadioButton,
         output_window,
-        seed_window,
     ) -> None:
         """
         Initializes the number sequence controller.
@@ -44,53 +46,19 @@ class NumberSequenceController:
         self.ascending_order = ascending_order
         self.descending_order = descending_order
         self.output_window = output_window
-        self.seed_window = seed_window
+        self.seed_model = Seed()
+        self.user_model = User()
+        self.pcgrng = PCGRNG()
 
         # Setup signals and slots for number sequence-related actions
-        self.btn_seed_numbers.clicked.connect(self.set_number_seed)
-        self.btn_seed_numbers.clicked.connect(self.generate_seed)
         self.btn_clear_numbers.clicked.connect(self.clear_numbers)
         self.btn_generate_numbers.clicked.connect(self.generate_numbers)
-
-    def set_number_seed(self):
-        """
-        Shows or hides the seed window for number generation based on its current visibility state.
-        """
-        if self.seed_window.isVisible():
-            self.seed_window.close()
-        else:
-            self.seed_window.show()
 
     def generate_seed(self):
         """
         Generates a seed for the random number generator.
         """
         pass
-
-    def set_seed(self):
-        """
-        Sets the seed for the random number generator.
-        """
-        self.seed_window.show()
-
-        # determine the selected option and set the seed accordingly
-        if self.seed_window.radio_gen_new_seed.isChecked():
-            seed = self.seed_window.gen_new_seed.value()
-        elif self.seed_window.radio_old_seed.isChecked():
-            seed = self.seed_window.old_seed.value()
-        elif self.seed_window.radio_con_old_seed.isChecked():
-            seed = self.seed_window.con_old_seed.value()
-        else:
-            seed = None
-
-        pcg = None
-
-        if seed is not None:
-            pcg = PCGRNG(initstate=seed)
-        else:
-            pcg = PCGRNG()
-
-        return pcg
 
     def clear_numbers(self):
         """
@@ -177,9 +145,27 @@ class NumberSequenceController:
         if not valid_values:
             return
 
-        pcg = PCGRNG(initstate=123)
+        # Set the seed for the random number generator
 
-        numbers = pcg.get_unique_random_sequence(l_bound, u_bound, n_elements)
+        # 1) Check if the user has set a seed
+        # 2) If not, generate a seed
+        # 3) If yes, use the user's seed
+        # 4) Set the seed for the random number generator
+        user_dict = self.user_model.read_user_username(SESSION_NAME)
+
+        if user_dict is not None:
+            user_id = user_dict["user_id"]
+
+        seed = self.seed_model.read_seed(user_id)
+
+        if seed is not None:
+            seed_value = seed["seed_value"]
+        else:
+            seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
+
+        self.pcgrng.seed(seed_value)
+
+        numbers = self.pcgrng.get_unique_random_sequence(l_bound, u_bound, n_elements)
 
         if n_groups > 1:
             numbers = sorted(numbers)

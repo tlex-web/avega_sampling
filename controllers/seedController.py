@@ -1,4 +1,6 @@
 # from app import SeedWindow
+from PyQt6.QtWidgets import QPushButton
+
 from config import SESSION_NAME
 from utils.PCGRNG import PCGRNG
 from models.Seed import Seed
@@ -10,17 +12,24 @@ class SeedController:
     def __init__(
         self,
         seed_window,
+        btn_set_seed_numbers: QPushButton,
+        btn_set_seed_dates: QPushButton,
     ) -> None:
         """
         Initializes the seed controller.
         """
         self.seed_window = seed_window
+        self.btn_set_seed_numbers = btn_set_seed_numbers
+        self.btn_set_seed_dates = btn_set_seed_dates
         self.seed_model = Seed()
         self.pcgrng = PCGRNG()
         self.user_model = User()
         self.seed = None
 
         # Setup signals and slots for number seed-related actions
+        self.btn_set_seed_numbers.clicked.connect(self.seed_window.show)
+        self.btn_set_seed_dates.clicked.connect(self.seed_window.show)
+        self.btn_set_seed_dates = btn_set_seed_dates
         self.seed_window.buttonBox.accepted.connect(self.save_seed)
         self.seed_window.buttonBox.rejected.connect(self.seed_window.close)
 

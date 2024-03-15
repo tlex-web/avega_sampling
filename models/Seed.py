@@ -22,7 +22,7 @@ class Seed:
 
         return query.exec()
 
-    def get_seed(self, seed_id: int) -> dict | None:
+    def read_seed(self, user_id: int) -> dict | None:
         """Get a seed from the database.
 
         Args:
@@ -33,15 +33,14 @@ class Seed:
         """
 
         query = QSqlQuery()
-        query.prepare("SELECT * FROM seeds WHERE seed_id = ?")
-        query.addBindValue(seed_id)
+        query.prepare("SELECT * FROM seeds WHERE user_id = ?")
+        query.addBindValue(user_id)
         query.exec()
 
         if query.next():
             return {
-                "id": query.value("id"),
                 "seed_value": query.value("seed_value"),
-                "project_id": query.value("project_id"),
+                "user_id": query.value("user_id"),
             }
 
         return None

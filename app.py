@@ -140,7 +140,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.radiobutton_asc_numbers,
             self.radiobutton_desc_numbers,
             self.output_window,
-            self.seed_window,
         )
 
         # Dates Sequence tab signals
@@ -166,7 +165,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # )
 
         # Seed Window signals
-        self.seed_controller = SeedController(self.seed_window)
+        self.seed_controller = SeedController(
+            self.seed_window, self.btn_seed_numbers, self.btn_seed_dates
+        )
 
 
 # Monetary Unit Sampling tab signals and slots

@@ -129,9 +129,9 @@ class Logger:
         self.logger.info(
             message,
             extra={"env": env.value},
-            stack_info=True if self.isdev else False,
+            stack_info=False,
             exc_info=True,
-            stacklevel=2 if self.isdev else 1,
+            stacklevel=1,
         )
 
     def critical(self, message: str | Exception, env: LogEnvironment):
