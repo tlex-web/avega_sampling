@@ -1,10 +1,7 @@
 import sys
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 
-from utils.Logger import Logger, LogEnvironment
-from config import ENV
-
-log = Logger(True if ENV == "Development" else False)
+from utils.Logger import log, LogEnvironment
 
 
 class Database:
@@ -55,7 +52,7 @@ class Database:
             """CREATE TABLE IF NOT EXISTS projects (project_id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
         )
         query.exec(
-            """CREATE TABLE IF NOT EXISTS seeds (seed_id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value INTEGER NOT NULL, project_id INTEGER NOT NULL, FOREIGN KEY(project_id) REFERENCES projects(id))"""
+            """CREATE TABLE IF NOT EXISTS seeds (seed_id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value INTEGER NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
         )
 
         log.info("Created tables: users, projects, seeds", LogEnvironment.DATABASE)

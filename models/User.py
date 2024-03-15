@@ -1,9 +1,6 @@
 from PyQt6.QtSql import QSqlQuery
 
-from utils.Logger import Logger, LogEnvironment
-from config import ENV
-
-log = Logger(True if ENV == "Development" else False)
+from utils.Logger import log, LogEnvironment
 
 
 class User:
@@ -14,17 +11,26 @@ class User:
 
         Args:
             username (str): Username of the new user
+
+        Returns:
+
         """
 
         query = QSqlQuery()
         query.prepare("INSERT INTO users (username) VALUES (?)")
         query.addBindValue(username)
 
-        log.info(f"Created user with username: {username}", LogEnvironment.MODELS)
+        if query.exec():
+            log.info(f"Created user with username: {username}", LogEnvironment.MODELS)
+            return query.lastInsertId()
+        else:
+            log.error(
+                f"Failed to create user: {query.lastError().text()}",
+                LogEnvironment.MODELS,
+            )
+            return None
 
-        return query.exec()
-
-    def read_user(self, user_id: int):
+    def read_user_id(self, user_id: int):
         """Read a user from the database
 
         Args:
@@ -47,6 +53,38 @@ class User:
                     "user_id": query.value("user_id"),
                     "username": query.value("username"),
                 }
+
+        except Exception as e:
+            log.error(f"Error reading user: {e}", LogEnvironment.MODELS)
+            return None
+
+    def read_user_username(self, username: str):
+        """Read a user from the database
+
+        Args:
+            username (str): Username
+
+        Returns:
+            QSqlQuery: Query object
+        """
+
+        try:
+            query = QSqlQuery()
+            query.prepare("SELECT * FROM users WHERE username = ?")
+            query.addBindValue(username)
+            query.exec()
+
+            if query.next():
+
+                log.info(f"Read user with username: {username}", LogEnvironment.MODELS)
+                return {
+                    "user_id": query.value("user_id"),
+                    "username": query.value("username"),
+                }
+            else:
+                log.error(
+                    f"User with username: {username} not found", LogEnvironment.MODELS
+                )
 
         except Exception as e:
             log.error(f"Error reading user: {e}", LogEnvironment.MODELS)

@@ -1,8 +1,9 @@
-from PyQt6.QtWidgets import QPushButton
+# from app import SeedWindow
+from config import SESSION_NAME
 from utils.PCGRNG import PCGRNG
 from models.Seed import Seed
-
-# from app import SeedWindow
+from models.User import User
+from utils.Logger import log, LogEnvironment
 
 
 class SeedController:
@@ -14,18 +15,12 @@ class SeedController:
         Initializes the seed controller.
         """
         self.seed_window = seed_window
-        self.pcgrng = PCGRNG()
         self.seed_model = Seed()
+        self.pcgrng = PCGRNG()
+        self.user_model = User()
+        self.seed = None
 
         # Setup signals and slots for number seed-related actions
-        self.seed_window.radio_continue_using_seed.toggled.connect(
-            self.set_continue_using_old_seed
-        )
-        self.seed_window.radio_new_seed.toggled.connect(self.set_new_seed)
-        self.seed_window.radio_gen_new_seed.toggled.connect(self.set_gen_new_seed)
-        self.seed_window.radio_old_seed.toggled.connect(
-            self.set_regenerate_using_old_seed
-        )
         self.seed_window.buttonBox.accepted.connect(self.save_seed)
         self.seed_window.buttonBox.rejected.connect(self.seed_window.close)
 
@@ -40,37 +35,32 @@ class SeedController:
             input.setStyleSheet("border: 1px solid green;")
             return True
 
-    def set_continue_using_old_seed(self):
-        """
-        Sets the seed to the old seed.
-        """
-        if self.check_input(self.seed_window.old_seed_continue):
-            self.pcgrng.seed(self.seed_window.old_seed_continue.value())
-
-    def set_new_seed(self):
-        """
-        Sets the seed to a new seed.
-        """
-        if self.check_input(self.seed_window.seed_input):
-            self.pcgrng.seed(self.seed_window.seed_input.value())
-
-    def set_gen_new_seed(self):
-        """
-        Generates a new seed.
-        """
-        seed = self.pcgrng.get_random_number(0, 2**32 - 1)
-        self.pcgrng.seed(seed)
-
-    def set_regenerate_using_old_seed(self):
-        """
-        Sets the seed to a user-defined seed.
-        """
-        if self.check_input(self.seed_window.old_seed_regenerate):
-            self.pcgrng.seed(self.seed_window.old_seed_regenerate.value())
-
     def save_seed(self):
         """
         Saves the seed to the seed model.
         """
-        self.seed_model.create_seed("test", 1)
-        self.seed_window.close()
+        if self.seed_window.radio_gen_new_seed.isChecked():
+            self.check_input(self.seed_window.seed_input)
+            self.seed = self.pcgrng.get_random_number(
+                1, 2**32 - 1
+            )  # 2**32 - 1 is the maximum value for a 32-bit integer
+        elif self.seed_window.radio_new_seed.isChecked():
+            self.check_input(self.seed_window.seed_input)
+            self.seed = self.seed_window.seed_input.value()
+        elif self.seed_window.radio_old_seed.isChecked():
+            self.check_input(self.seed_window.old_seed_continue)
+            self.seed = self.seed_window.old_seed_continue.value()
+        elif self.seed_window.radio_continue_using_seed.isChecked():
+            self.check_input(self.seed_window.old_seed_regenerate)
+            self.seed = self.seed_window.old_seed_regenerate.value()
+        else:
+            self.seed = None
+
+        user_id = self.user_model.read_user_username(SESSION_NAME)
+
+        if user_id and self.seed is not None:
+            user_id = user_id["user_id"]
+            self.seed_model.create_seed(self.seed, user_id)
+            self.seed_window.close()
+        else:
+            log.error("Failed to save seed", LogEnvironment.CONTROLLERS)

@@ -1,3 +1,4 @@
+import os
 import configparser
 
 config = configparser.ConfigParser()
@@ -37,3 +38,7 @@ DB_NAME = config["DATABASE"]["DB_NAME"]
 # Set configuration parameters
 
 IS_DEV = True if ENV == "Development" else False
+
+# Set session parameters
+
+SESSION_NAME = os.environ["COMPUTERNAME"]

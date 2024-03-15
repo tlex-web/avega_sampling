@@ -1,8 +1,5 @@
 from models.Projects import Project
-from utils.Logger import Logger, LogEnvironment
-from config import IS_DEV
-
-log = Logger(IS_DEV)
+from utils.Logger import log, LogEnvironment
 
 
 class ProjectController:

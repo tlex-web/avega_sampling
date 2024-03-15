@@ -96,6 +96,8 @@ class NumberSequenceController:
         """
         Clears the input fields for number generation.
         """
+
+        # Clear the input fields and reset placeholder values
         self.sequence_name.clear()
         self.sequence_name.setPlaceholderText("sequence 1")
 
@@ -114,6 +116,18 @@ class NumberSequenceController:
         self.original_order.setChecked(True)
         self.ascending_order.setChecked(False)
         self.descending_order.setChecked(False)
+
+        # Reset the stylesheets and tooltips for the input fields
+        self.sequence_name.setStyleSheet("color: black; border: none;")
+        self.l_bound.setStyleSheet("color: black; border: none;")
+        self.u_bound.setStyleSheet("color: black; border: none;")
+        self.n_groups.setStyleSheet("color: black; border: none;")
+        self.n_elements.setStyleSheet("color: black; border: none;")
+        self.sequence_name.setToolTip("")
+        self.l_bound.setToolTip("")
+        self.u_bound.setToolTip("")
+        self.n_groups.setToolTip("")
+        self.n_elements.setToolTip("")
 
     def generate_numbers(self):
         """
@@ -137,7 +151,7 @@ class NumberSequenceController:
         # Check if the values are valid
         if l_bound >= u_bound:
             self.l_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.l_bound.setToolTip("Upper bound must be greater than lower bound")
+            self.l_bound.setToolTip("Lower bound must be greater than lower bound")
             self.u_bound.setStyleSheet("color: red; border: 1px solid red;")
             self.u_bound.setToolTip("Upper bound must be greater than lower bound")
             valid_values = False

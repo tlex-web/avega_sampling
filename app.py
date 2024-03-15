@@ -1,5 +1,4 @@
 import sys
-import traceback
 from PyQt6 import QtWidgets
 
 from view.MainWindow import Ui_MainWindow
@@ -10,26 +9,27 @@ from view.LoadingWindow import Ui_Form as Ui_LoadingWindow
 from view.AboutWindow import Ui_Form as Ui_AboutWindow
 
 from controllers.seedController import SeedController
-from controllers.userController import UserController
+from controllers.sessionController import SessionController
 from controllers.projectController import ProjectController
 from controllers.numberSequenceController import NumberSequenceController
 from controllers.datesSequenceController import DatesSequenceController
 from controllers.windowController import WindowController
 from controllers.menuController import MenuController
 
-from utils.Logger import Logger, LogEnvironment
 
 from utils.PCGRNG import PCGRNG
 from db.Database import Database
-from config import DB_FILENAME, IS_DEV
+from config import DB_FILENAME
 
 import resources  # ignore: needed for assets and correct packaging
 
-
-# create global database object
+# create database object
 db = Database(DB_FILENAME)
+db.connect()
+db.create_tables()
 
-log = Logger(IS_DEV)
+# create user session
+SessionController().init_session()
 
 
 class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
@@ -179,6 +179,7 @@ class App(QtWidgets.QApplication):
     def __init__(self, *args, **kwargs):
         super(App, self).__init__(*args, **kwargs)
 
+        # create the main window
         self.window = MainWindow()
         self.window.show()
 

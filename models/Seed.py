@@ -4,21 +4,21 @@ from PyQt6.QtSql import QSqlQuery
 class Seed:
     """Represents a seed in the database."""
 
-    def create_seed(self, seed_value: str, project_id: int) -> bool:
+    def create_seed(self, seed_value: int, user_id: int) -> bool:
         """Create a new seed in the database.
 
         Args:
-            seed_value (str): Seed value.
-            project_id (int): Project id.
+            seed_value (int): Seed value.
+            user_id (int): user id.
 
         Returns:
             bool: True if the seed is created successfully, False otherwise.
         """
 
         query = QSqlQuery()
-        query.prepare("INSERT INTO seeds (seed_value, project_id) VALUES (?, ?)")
+        query.prepare("INSERT INTO seeds (seed_value, user_id) VALUES (?, ?)")
         query.addBindValue(seed_value)
-        query.addBindValue(project_id)
+        query.addBindValue(user_id)
 
         return query.exec()
 

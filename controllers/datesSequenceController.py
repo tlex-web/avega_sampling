@@ -91,6 +91,8 @@ class DatesSequenceController:
         """
         Clear the input fields for date generation and reset placeholder values.
         """
+
+        # Clear the input fields and reset placeholder values
         self.sequence_name.clear()
         self.sequence_name.setPlaceholderText("Enter sequence name")
 
@@ -111,6 +113,18 @@ class DatesSequenceController:
         self.original_order.setChecked(True)
         self.ascending_order.setChecked(False)
         self.descending_order.setChecked(False)
+
+        # Reset the stylesheets and tooltips for the input fields
+        self.sequence_name.setStyleSheet("color: black; border: none;")
+        self.l_bound.setStyleSheet("color: black; border: none;")
+        self.u_bound.setStyleSheet("color: black; border: none;")
+        self.n_groups.setStyleSheet("color: black; border: none;")
+        self.n_elements.setStyleSheet("color: black; border: none;")
+        self.sequence_name.setToolTip("")
+        self.l_bound.setToolTip("")
+        self.u_bound.setToolTip("")
+        self.n_groups.setToolTip("")
+        self.n_elements.setToolTip("")
 
     def generate_dates(self):
         """
@@ -133,32 +147,28 @@ class DatesSequenceController:
 
         # Check if the values are valid
         if l_bound >= u_bound:
-            self.label_lbound.setStyleSheet("color: red")
-            self.label_lbound.setText("Upper bound must be greater than lower bound")
-            self.label_ubound.setStyleSheet("color: red")
-            self.label_ubound.setText("Upper bound must be greater than lower bound")
+            self.l_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.l_bound.setToolTip("Lower bound must be greater than lower bound")
+            self.u_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.u_bound.setToolTip("Upper bound must be greater than lower bound")
             valid_values = False
         else:
-            self.label_lbound.setStyleSheet("color: black")
-            self.label_lbound.setText("Lower bound")
-            self.label_ubound.setStyleSheet("color: black")
-            self.label_ubound.setText("Upper bound")
+            self.l_bound.setStyleSheet("color: black; border: none;")
+            self.u_bound.setStyleSheet("color: black; border: none;")
 
         if n_groups < 1:
-            self.label_n_groups.setStyleSheet("color: red")
-            self.label_n_groups.setText("Number of groups must be greater than 0")
+            self.n_groups.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_groups.setToolTip("Number of groups must be greater than 0")
             valid_values = False
         else:
-            self.label_n_groups.setStyleSheet("color: black")
-            self.label_n_groups.setText("Number of groups")
+            self.n_groups.setStyleSheet("color: black; border: none;")
 
         if n_elements < 1:
-            self.label_n_elements.setStyleSheet("color: red")
-            self.label_n_elements.setText("Number of elements must be greater than 0")
+            self.n_elements.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_elements.setToolTip("Number of elements must be greater than 0")
             valid_values = False
         else:
-            self.label_n_elements.setStyleSheet("color: black")
-            self.label_n_elements.setText("Number of elements")
+            self.n_elements.setStyleSheet("color: black; border: none;")
 
         # If any of the values are invalid, return
         if not valid_values:

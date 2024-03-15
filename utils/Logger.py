@@ -7,6 +7,8 @@ import traceback
 from types import TracebackType
 from typing import Type
 
+from config import IS_DEV
+
 
 class LogEnvironment(Enum):
     DATABASE = "DATABASE"
@@ -50,8 +52,9 @@ class Logger:
         self.console_handler.setLevel(logging.DEBUG if self.isdev else logging.INFO)
 
         # Create a formatter and set the formatter for the handlers
+        # Use %(filename)s and %(funcName)s to get the filename and function name where the error occurred
         self.formatter = logging.Formatter(
-            "%(env)s %(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            "[%(levelname)s] - %(asctime)s - %(env)s - %(filename)s - %(funcName)s - %(message)s"
         )
         self.file_handler.setFormatter(self.formatter)
         self.console_handler.setFormatter(self.formatter)
@@ -59,6 +62,9 @@ class Logger:
         # Add the handlers to the logger
         self.logger.addHandler(self.file_handler)
         self.logger.addHandler(self.console_handler)
+
+        # Prevent the logger from propagating to the root logger
+        self.logger.propagate = False
 
         """
         Set the custom exception handler to log uncaught exceptions.
@@ -93,14 +99,16 @@ class Logger:
     def log(self, message: str, env: LogEnvironment):
         """Log a message to the log file."""
         self.logger.debug(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             exc_info=True,
         )
 
     def error(self, message: str | Exception, env: LogEnvironment):
         """Log an error to the log file."""
         self.logger.error(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             stack_info=True if self.isdev else False,
             exc_info=True,
             stacklevel=2 if self.isdev else 1,
@@ -109,7 +117,8 @@ class Logger:
     def warning(self, message: str | Exception, env: LogEnvironment):
         """Log a warning to the log file."""
         self.logger.warning(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             stack_info=True if self.isdev else False,
             exc_info=True,
             stacklevel=2 if self.isdev else 1,
@@ -118,14 +127,18 @@ class Logger:
     def info(self, message: str, env: LogEnvironment):
         """Log an info message to the log file."""
         self.logger.info(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
+            stack_info=True if self.isdev else False,
             exc_info=True,
+            stacklevel=2 if self.isdev else 1,
         )
 
     def critical(self, message: str | Exception, env: LogEnvironment):
         """Log a critical message to the log file."""
         self.logger.critical(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             stack_info=True if self.isdev else False,
             exc_info=True,
             stacklevel=2 if self.isdev else 1,
@@ -134,7 +147,8 @@ class Logger:
     def exception(self, message: str | Exception, env: LogEnvironment):
         """Log an exception to the log file."""
         self.logger.exception(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             stack_info=True if self.isdev else False,
             exc_info=True,
             stacklevel=2 if self.isdev else 1,
@@ -143,7 +157,8 @@ class Logger:
     def debug(self, message: str, env: LogEnvironment):
         """Log a debug message to the log file."""
         self.logger.debug(
-            f"{env.value} - {message}",
+            message,
+            extra={"env": env.value},
             stack_info=True if self.isdev else False,
             exc_info=True,
             stacklevel=2 if self.isdev else 1,
@@ -156,3 +171,7 @@ class Logger:
     def time(self, env: LogEnvironment):
         """Log the current time to the log file."""
         self.logger.debug(f"{env.value} - {datetime.now()}")
+
+
+# Create a global logger instance to prevent circular imports and multiple instances of the logger
+log = Logger(IS_DEV)
