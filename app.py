@@ -143,26 +143,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         )
 
         # Dates Sequence tab signals
-        # self.dates_sequence_controller = DatesSequenceController(
-        #     self.btn_generate_dates,
-        #     self.btn_seed_dates,
-        #     self.btn_clear_dates,
-        #     self.sequence_name_dates,
-        #     self.lbound_dates,
-        #     self.ubound_dates,
-        #     self.label_dates_lbound,
-        #     self.label_dates_ubound,
-        #     self.exclude_dates,
-        #     self.n_groups_dates,
-        #     self.label_dates_n_groups,
-        #     self.n_elements_dates,
-        #     self.label_dates_n_elements,
-        #     self.radiobutton_org_dates,
-        #     self.radiobutton_asc_dates,
-        #     self.radiobutton_desc_dates,
-        #     self.output_window,
-        #     self.seed_window,
-        # )
+        self.dates_sequence_controller = DatesSequenceController(
+            self.btn_generate_dates,
+            self.btn_clear_dates,
+            self.exclude_bank_holidays,
+            self.exclude_saturdays,
+            self.exclude_sundays,
+            self.sequence_name_dates,
+            self.lbound_dates,
+            self.ubound_dates,
+            self.label_dates_lbound,
+            self.label_dates_ubound,
+            self.exclude_dates,
+            self.n_groups_dates,
+            self.label_dates_n_groups,
+            self.n_elements_dates,
+            self.label_dates_n_elements,
+            self.radiobutton_org_dates,
+            self.radiobutton_asc_dates,
+            self.radiobutton_desc_dates,
+            self.output_window,
+            self.loading_window,
+        )
 
         # Seed Window signals
         self.seed_controller = SeedController(

@@ -54,12 +54,6 @@ class NumberSequenceController:
         self.btn_clear_numbers.clicked.connect(self.clear_numbers)
         self.btn_generate_numbers.clicked.connect(self.generate_numbers)
 
-    def generate_seed(self):
-        """
-        Generates a seed for the random number generator.
-        """
-        pass
-
     def clear_numbers(self):
         """
         Clears the input fields for number generation.

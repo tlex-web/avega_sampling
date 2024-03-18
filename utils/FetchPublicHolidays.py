@@ -1,72 +1,79 @@
 import requests
 import json
-
-
 from utils.Logger import log, LogEnvironment
 
 
 class FetchPublicHolidays:
-    def __init__(self, year: int):
-        """Fetch dates of public holidays in Luxembourg for a given year and return them as a list
+    def __init__(self):
+        """Fetch dates of public holidays in Luxembourg for a given period and return them as a list"""
+        self.start_year = None
+        self.end_year = None
+
+    def set_period(self, start_year: int, end_year: int):
+        """Validate the start and end years
 
         Args:
-            year (int): The year for which to fetch the public holidays
+            start_year (int): The start year to validate
+            end_year (int): The end year to validate
 
         Raises:
-            ValueError: If the year is not a valid integer or is outside the range of 2000 to 2100
+            ValueError: If the years are not valid integers or are outside the range of 2000 to 2100
         """
-        self.year = self.validate_year(year)
-
-    def validate_year(self, year: int):
-        """Validate the year
-
-        Args:
-            year (int): The year to validate
-
-        Returns:
-            int: The validated year
-
-        Raises:
-            ValueError: If the year is not a valid integer or is outside the range of 2000 to 2100
-        """
-        if year and isinstance(year, int):
-            if year < 2000 or year > 2100:
-                raise ValueError("Year must be between 2000 and 2100.")
+        if (
+            start_year
+            and isinstance(start_year, int)
+            and end_year
+            and isinstance(end_year, int)
+        ):
+            if (
+                start_year < 2000
+                or start_year > 2100
+                or end_year < 2000
+                or end_year > 2100
+            ):
+                raise ValueError("Years must be between 2000 and 2100.")
             else:
-                return year
+                self.start_year = start_year
+                self.end_year = end_year
         else:
-            raise ValueError("Year must be an integer.")
+            raise ValueError("Years must be integers.")
 
-    async def get_public_holidays(self):
+    def get_public_holidays(self):
         """Fetch the public holidays from the API and reformat the dates
 
         Returns:
             list[dict]: List of public holidays, where each holiday is represented as a dictionary
                         with keys 'date', 'name', 'localName', 'countryCode', and 'fixed'
         """
+        all_holidays = []
+        if self.start_year is not None and self.end_year is not None:
+            for year in range(self.start_year, self.end_year + 1):
+                # Your code here
+                try:
+                    response = requests.get(
+                        f"https://date.nager.at/api/v3/publicholidays/{year}/LU"
+                    )
+                    response.raise_for_status()
 
-        try:
-            response = requests.get(
-                f"https://date.nager.at/api/v3/publicholidays/{self.year}/LU"
-            )
-            response.raise_for_status()
+                    holidays = json.loads(response.text)
+                    for holiday in holidays:
+                        holiday["date"] = holiday["date"].replace("-", "/")
 
-            holidays = json.loads(response.text)
-            for holiday in holidays:
-                holiday["date"] = holiday["date"].replace("-", "/")
+                    all_holidays.extend(holidays)
 
-            log.info(
-                f"Public holidays for {self.year} fetched successfully.",
-                LogEnvironment.UTILS,
-            )
-            return holidays
+                    log.info(
+                        f"Public holidays for {year} fetched successfully.",
+                        LogEnvironment.UTILS,
+                    )
 
-        except requests.exceptions.HTTPError as e:
-            log.error(e, LogEnvironment.UTILS)
-            return None
-        except requests.exceptions.RequestException as e:
-            log.error(e, LogEnvironment.UTILS)
-            return None
-        except Exception as e:
-            log.error(e, LogEnvironment.UTILS)
-            return None
+                except requests.exceptions.HTTPError as e:
+                    log.error(e, LogEnvironment.UTILS)
+                    return None
+                except requests.exceptions.RequestException as e:
+                    log.error(e, LogEnvironment.UTILS)
+                    return None
+                except Exception as e:
+                    log.error(e, LogEnvironment.UTILS)
+                    return None
+
+        return all_holidays

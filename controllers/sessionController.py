@@ -27,12 +27,22 @@ class SessionController:
             int: A random user id
         """
 
-        user_id = self.model.create_user(SESSION_NAME)
+        # find session, if it exists
+        user_id = self.model.read_user_username(SESSION_NAME)
 
         if user_id is None:
-            log.error("Failed to start user session", LogEnvironment.CONTROLLERS)
-            raise Exception("Failed to start user session")
+            user_id = self.model.create_user(SESSION_NAME)
+
+            if user_id is None:
+                log.error("Failed to start user session", LogEnvironment.CONTROLLERS)
+                raise Exception("Failed to start user session")
+            else:
+                log.info(
+                    f"Started user session with id: {user_id}",
+                    LogEnvironment.CONTROLLERS,
+                )
         else:
             log.info(
-                f"Started user session with id: {user_id}", LogEnvironment.CONTROLLERS
+                f"Continuing user session with id: {user_id['user_id']}",
+                LogEnvironment.CONTROLLERS,
             )

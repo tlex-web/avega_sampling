@@ -2,12 +2,20 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QLabel,
     QRadioButton,
+    QCheckBox,
     QSpinBox,
     QLineEdit,
     QGroupBox,
     QDateEdit,
 )
+from PyQt6.QtCore import QPropertyAnimation
+
 from utils.PCGRNG import PCGRNG
+from utils.FetchPublicHolidays import FetchPublicHolidays
+
+from models.Seed import Seed
+from models.User import User
+from config import SESSION_NAME
 
 
 class DatesSequenceController:
@@ -15,8 +23,10 @@ class DatesSequenceController:
     def __init__(
         self,
         btn_generate_dates: QPushButton,
-        btn_seed_dates: QPushButton,
         btn_clear_dates: QPushButton,
+        exclude_bank_holidays: QCheckBox,
+        exclude_saturdays: QCheckBox,
+        exclude_sundays: QCheckBox,
         sequence_name: QLineEdit,
         l_bound: QDateEdit,
         u_bound: QDateEdit,
@@ -31,14 +41,16 @@ class DatesSequenceController:
         ascending_order: QRadioButton,
         descending_order: QRadioButton,
         output_window,
-        seed_window,
+        loading_window,
     ) -> None:
         """
         Initializes the number sequence controller.
         """
         self.btn_generate_dates = btn_generate_dates
-        self.btn_seed_dates = btn_seed_dates
         self.btn_clear_dates = btn_clear_dates
+        self.exclude_bank_holidays = exclude_bank_holidays
+        self.exclude_saturdays = exclude_saturdays
+        self.exclude_sundays = exclude_sundays
         self.sequence_name = sequence_name
         self.l_bound = l_bound
         self.u_bound = u_bound
@@ -53,39 +65,61 @@ class DatesSequenceController:
         self.ascending_order = ascending_order
         self.descending_order = descending_order
         self.output_window = output_window
-        self.seed_window = seed_window
+        self.loading_window = loading_window
+        self.seed_model = Seed()
+        self.user_model = User()
+        self.fetch_public_holidays = FetchPublicHolidays()
+        self.pcgrng = PCGRNG()
+        self.public_holidays = None
 
         # Setup signals and slots for number sequence-related actions
-        self.btn_seed_dates.clicked.connect(self.set_dates_seed)
-        self.btn_generate_dates.clicked.connect(self.generate_dates)
-        self.btn_seed_dates.clicked.connect(self.generate_seed)
+        self.exclude_bank_holidays.clicked.connect(self.exclude_holidays)
         self.btn_clear_dates.clicked.connect(self.clear_dates)
         self.btn_generate_dates.clicked.connect(self.generate_dates)
 
-    def set_dates_seed(self):
+    def exclude_holidays(self):
         """
-        Shows or hides the seed window for date generation based on its current visibility state.
+        Exclude bank holidays from the date generation.
         """
-        if self.seed_window.isVisible():
-            self.seed_window.close()
+
+        # Get the period between the lower and upper bounds
+        l_bound = self.l_bound.date().toPyDate().year
+        u_bound = self.u_bound.date().toPyDate().year
+
+        # Get the public holidays in the period
+        self.fetch_public_holidays.set_period(l_bound, u_bound)
+
+        if self.loading_window.isVisible():
+            self.loading_window.close()
         else:
-            self.seed_window.show()
+            self.loading_window.show()
 
-    def generate_seed(self):
-        """
-        Generates a seed for the date generation and displays it in the output window.
-        """
-        pcg = PCGRNG(initstate=123)
+        # animate a loading animation in the progress bar while the public holidays are being fetched
+        animation = QPropertyAnimation(self.loading_window.progressBar, b"value")
+        animation.setDuration(1000)
+        animation.setStartValue(0)
+        animation.setLoopCount(-1)
+        animation.setEndValue(100)
+        animation.start()
 
-        seed = pcg.get_random_number(1, 10000)
+        public_holidays = self.fetch_public_holidays.get_public_holidays()
 
-        if self.output_window.isVisible():
-            self.output_window.close()
+        # Stop the loading animation
+        if public_holidays is not None:
+            animation.stop()
+            self.loading_window.close()
+
+        # Stop the loading animation after 30000ms and display an error message
         else:
-            self.output_window.show()
+            animation.stop()
+            self.loading_window.close()
+            self.loading_window.loading_bar.setValue(100)
+            self.loading_window.loading_bar.setStyleSheet("background-color: red;")
+            self.loading_window.loading_bar.setTextVisible(True)
+            self.loading_window.loading_bar.setFormat("Failed to fetch public holidays")
+            self.loading_window.show()
 
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append(f"Seed: {seed}")
+        self.public_holidays = public_holidays
 
     def clear_dates(self):
         """
@@ -136,8 +170,8 @@ class DatesSequenceController:
             if self.sequence_name.text() != ""
             else "sequence 1"
         )
-        l_bound = int(self.l_bound.text())
-        u_bound = int(self.u_bound.text())
+        l_bound = self.l_bound.date().toPyDate()
+        u_bound = self.u_bound.date().toPyDate()
 
         n_groups = int(self.n_groups.text())
         n_elements = int(self.n_elements.text())
@@ -174,10 +208,55 @@ class DatesSequenceController:
         if not valid_values:
             return
 
-        pcg = PCGRNG(initstate=123)
+        # Check if the user wants to exclude certain days
+        excluded_days = []
+        if self.exclude_saturdays.isChecked():
+            excluded_days.append(5)  # Saturday
+        if self.exclude_sundays.isChecked():
+            excluded_days.append(6)  # Sunday
 
-        dates = pcg.get_unique_random_sequence(l_bound, u_bound, n_elements)
+        dates = []  # Initialize the "dates" variable
 
+        if (
+            self.exclude_bank_holidays.isChecked()
+            and self.public_holidays is not None
+            and len(self.public_holidays) > 0
+        ):
+            if self.public_holidays is not None:
+                public_holidays = [holiday["date"] for holiday in self.public_holidays]
+                dates = [date for date in dates if date not in public_holidays]
+            else:
+                self.exclude_bank_holidays.setStyleSheet(
+                    "color: red; border: 1px solid red;"
+                )
+                self.exclude_bank_holidays.setToolTip("Failed to fetch public holidays")
+                return
+
+        # Exclude the selected days
+        dates = [date for date in dates if date.weekday() not in excluded_days]
+
+        # Set the seed for the random date generator
+
+        # 1) Check if the user has set a seed
+        # 2) If not, generate a seed
+        # 3) If yes, use the user's seed
+        # 4) Set the seed for the random number generator
+        user_dict = self.user_model.read_user_username(SESSION_NAME)
+
+        if user_dict is not None:
+            user_id = user_dict["user_id"]
+
+        seed = self.seed_model.read_seed(user_id)
+
+        if seed is not None:
+            seed_value = seed["seed_value"]
+        else:
+            seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
+
+        pcg = PCGRNG(seed_value)
+
+        dates = pcg.get_unique_random_sequence(1, len(dates), n_elements)
+        # Fix the order and display error messages on the UI
         if n_groups > 1:
             dates = sorted(dates)
             dates = [dates[i::n_groups] for i in range(n_groups)]
