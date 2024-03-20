@@ -60,7 +60,7 @@ class PCGRNG:
         """
         if length > (max_val - min_val + 1):
             raise ValueError(
-                "Length of sequence exceeds the number of unique values in the range."
+                f"Length of sequence exceeds the number of unique values in the range: {min_val} to {max_val} (inclusive) with length {length}"
             )
 
         sequence = set()

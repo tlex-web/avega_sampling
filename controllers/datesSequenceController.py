@@ -82,6 +82,11 @@ class DatesSequenceController:
         Exclude bank holidays from the date generation.
         """
 
+        # Check button state, since both events are triggered by the same signal
+        if not self.exclude_bank_holidays.isChecked():
+            self.public_holidays = None
+            return
+
         # Get the period between the lower and upper bounds
         l_bound = self.l_bound.date().toPyDate().year
         u_bound = self.u_bound.date().toPyDate().year
@@ -113,10 +118,10 @@ class DatesSequenceController:
         else:
             animation.stop()
             self.loading_window.close()
-            self.loading_window.loading_bar.setValue(100)
-            self.loading_window.loading_bar.setStyleSheet("background-color: red;")
-            self.loading_window.loading_bar.setTextVisible(True)
-            self.loading_window.loading_bar.setFormat("Failed to fetch public holidays")
+            self.loading_window.progressBar.setValue(100)
+            self.loading_window.progressBar.setStyleSheet("background-color: red;")
+            self.loading_window.progressBar.setTextVisible(True)
+            self.loading_window.progressBar.setFormat("Failed to fetch public holidays")
             self.loading_window.show()
 
         self.public_holidays = public_holidays
@@ -212,8 +217,12 @@ class DatesSequenceController:
         excluded_days = []
         if self.exclude_saturdays.isChecked():
             excluded_days.append(5)  # Saturday
+        else:
+            excluded_days.remove(5)
         if self.exclude_sundays.isChecked():
             excluded_days.append(6)  # Sunday
+        else:
+            excluded_days.remove(6)
 
         dates = []  # Initialize the "dates" variable
 
@@ -235,6 +244,11 @@ class DatesSequenceController:
         # Exclude the selected days
         dates = [date for date in dates if date.weekday() not in excluded_days]
 
+        if len(dates) == 0:
+            self.exclude_dates.setStyleSheet("color: red;")
+            self.exclude_dates.setToolTip("No dates to generate")
+            return
+
         # Set the seed for the random date generator
 
         # 1) Check if the user has set a seed
@@ -253,33 +267,35 @@ class DatesSequenceController:
         else:
             seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
 
-        pcg = PCGRNG(seed_value)
+        self.pcgrng.seed(seed_value)
 
-        dates = pcg.get_unique_random_sequence(1, len(dates), n_elements)
+        date_sequence = self.pcgrng.get_unique_random_sequence(
+            0, len(dates), n_elements
+        )
         # Fix the order and display error messages on the UI
         if n_groups > 1:
-            dates = sorted(dates)
-            dates = [dates[i::n_groups] for i in range(n_groups)]
+            date_sequence = sorted(date_sequence)
+            date_sequence = [date_sequence[i::n_groups] for i in range(n_groups)]
         else:
-            dates = [dates]
+            date_sequence = [date_sequence]
 
         if self.ascending_order.isChecked():
-            dates = [sorted(group) for group in dates]
+            date_sequence = [sorted(group) for group in date_sequence]
         elif self.descending_order.isChecked():
-            dates = [sorted(group, reverse=True) for group in dates]
+            date_sequence = [sorted(group, reverse=True) for group in date_sequence]
         else:
-            dates = [group for group in dates]
+            date_sequence = [group for group in date_sequence]
 
         if self.output_window.isVisible():
             self.output_window.close()
         else:
             self.output_window.show()
 
-        # print the dates
+        # print the date_sequence
         self.output_window.output_element.clear()
         self.output_window.output_element.append(sequence_name)
         self.output_window.output_element.append("")
-        for i, group in enumerate(dates):
+        for i, group in enumerate(date_sequence):
             self.output_window.output_element.append(f"Group {i+1}:")
             self.output_window.output_element.append(str(group))
             self.output_window.output_element.append("")

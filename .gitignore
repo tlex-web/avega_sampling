@@ -6,3 +6,4 @@ __pycache__
 logs
 htmlcov
 .vs
+*.db
