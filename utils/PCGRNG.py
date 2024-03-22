@@ -1,3 +1,6 @@
+from datetime import date, datetime, timedelta
+
+
 class PCGRNG:
     def __init__(self, initstate=0x853C49E6748FEA9B, initseq=0xDA3E39CB94B95BDB):
         """PCG Random Number Generator
@@ -44,7 +47,9 @@ class PCGRNG:
         range_size = max_val - min_val + 1
         return min_val + self.next() % range_size
 
-    def get_unique_random_sequence(self, min_val: int, max_val: int, length: int):
+    def get_unique_random_number_sequence(
+        self, min_val: int, max_val: int, length: int
+    ):
         """Generates a sequence of unique random numbers
 
         Args:
@@ -69,3 +74,53 @@ class PCGRNG:
             sequence.add(number)
 
         return list(sequence)
+
+    def get_random_date(self, start_date, end_date):
+        """
+        Generates a random date within a given start and end date.
+
+        Parameters:
+        - start_date (datetime): The start date.
+        - end_date (datetime): The end date.
+
+        Returns:
+        - datetime: A random date within the specified range.
+        """
+        delta = end_date - start_date
+        random_day = self.get_random_number(0, delta.days)
+        return start_date + timedelta(days=random_day)
+
+    def create_unique_date_sequence(
+        self, start_date: date, end_date: date, length: int, order
+    ):
+        """
+        Creates a unique sequence of random dates within a specified start and end date range.
+
+        Parameters:
+        - start_date (str): The start date in "YYYY-MM-DD" format.
+        - end_date (str): The end date in "YYYY-MM-DD" format.
+        - length (int): The number of unique dates to generate.
+
+        Returns:
+        - list[datetime]: An array of unique random dates within the specified range.
+        """
+
+        start_date_dt = datetime.strptime(start_date, "%Y-%m-%d")
+        end_date_dt = datetime.strptime(end_date, "%Y-%m-%d")
+
+        if (end_date_dt - start_date_dt).days < length:
+            raise ValueError(
+                "The range between start and end date is not enough to generate the requested number of unique dates."
+            )
+
+        unique_dates = set()
+        while len(unique_dates) < length:
+            random_date = self.get_random_date(start_date_dt, end_date_dt)
+            unique_dates.add(random_date)
+
+        if order == "ascending":
+            return sorted(list(unique_dates))
+        elif order == "descending":
+            return sorted(list(unique_dates), reverse=True)
+        else:
+            return list(unique_dates)

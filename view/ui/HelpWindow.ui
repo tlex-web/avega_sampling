@@ -18,31 +18,19 @@
     <normaloff>:/assets/icons/AVEGA-Favicon.ico</normaloff>:/assets/icons/AVEGA-Favicon.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWebEngineView" name="webEngineView">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>40</y>
-      <width>401</width>
-      <height>341</height>
-     </rect>
-    </property>
-    <property name="url">
-     <url>
-      <string>file:///C:/Users/aster/Documents_/Programming/avega_sampling/LICENSE</string>
-     </url>
-    </property>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QWidget" name="widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGraphicsView" name="graphicsView"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebEngineView</class>
-   <extends>QWidget</extends>
-   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

@@ -181,6 +181,45 @@ class DatesSequenceController:
         n_groups = int(self.n_groups.text())
         n_elements = int(self.n_elements.text())
 
+        # Check if the user wants to exclude certain days
+        excluded_days = []
+        if self.exclude_saturdays.isChecked():
+            excluded_days.append(5)  # Saturday
+        else:
+            if excluded_days.count(5) > 0:
+                excluded_days.remove(5)
+        if self.exclude_sundays.isChecked():
+            excluded_days.append(6)  # Sunday
+        else:
+            if excluded_days.count(6) > 0:
+                excluded_days.remove(6)
+        print(excluded_days)
+        dates = []  # Initialize the "dates" variable
+        from datetime import timedelta
+
+        if (
+            self.exclude_bank_holidays.isChecked()
+            and self.public_holidays is not None
+            and len(self.public_holidays) > 0
+        ):
+            if self.public_holidays is not None:
+                public_holidays = [holiday["date"] for holiday in self.public_holidays]
+                dates = [date for date in dates if date not in public_holidays]
+            else:
+                self.exclude_bank_holidays.setStyleSheet(
+                    "color: red; border: 1px solid red;"
+                )
+                self.exclude_bank_holidays.setToolTip("Failed to fetch public holidays")
+                return
+        else:
+            dates = [
+                l_bound + timedelta(days=i) for i in range((u_bound - l_bound).days + 1)
+            ]
+        print(dates)
+        # Exclude the selected days
+        dates = [date for date in dates if date.weekday() not in excluded_days]
+        print(dates)
+
         # Initialize a flag for valid values
         valid_values = True
 
@@ -208,45 +247,15 @@ class DatesSequenceController:
             valid_values = False
         else:
             self.n_elements.setStyleSheet("color: black; border: none;")
-
-        # If any of the values are invalid, return
-        if not valid_values:
-            return
-
-        # Check if the user wants to exclude certain days
-        excluded_days = []
-        if self.exclude_saturdays.isChecked():
-            excluded_days.append(5)  # Saturday
-        else:
-            excluded_days.remove(5)
-        if self.exclude_sundays.isChecked():
-            excluded_days.append(6)  # Sunday
-        else:
-            excluded_days.remove(6)
-
-        dates = []  # Initialize the "dates" variable
-
-        if (
-            self.exclude_bank_holidays.isChecked()
-            and self.public_holidays is not None
-            and len(self.public_holidays) > 0
-        ):
-            if self.public_holidays is not None:
-                public_holidays = [holiday["date"] for holiday in self.public_holidays]
-                dates = [date for date in dates if date not in public_holidays]
-            else:
-                self.exclude_bank_holidays.setStyleSheet(
-                    "color: red; border: 1px solid red;"
-                )
-                self.exclude_bank_holidays.setToolTip("Failed to fetch public holidays")
-                return
-
-        # Exclude the selected days
-        dates = [date for date in dates if date.weekday() not in excluded_days]
-
         if len(dates) == 0:
             self.exclude_dates.setStyleSheet("color: red;")
             self.exclude_dates.setToolTip("No dates to generate")
+            self.n_elements.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_elements.setToolTip("Increase the number of elements to generate")
+            valid_values = False
+
+        # If any of the values are invalid, return
+        if not valid_values:
             return
 
         # Set the seed for the random date generator
@@ -269,10 +278,15 @@ class DatesSequenceController:
 
         self.pcgrng.seed(seed_value)
 
-        date_sequence = self.pcgrng.get_unique_random_sequence(
-            0, len(dates), n_elements
+        date_sequence = self.pcgrng.create_unique_date_sequence(
+            l_bound,
+            u_bound,
+            n_elements,
+            self.ascending_order.isChecked()
+            or self.descending_order.isChecked()
+            or self.original_order.isChecked(),
         )
-        # Fix the order and display error messages on the UI
+
         if n_groups > 1:
             date_sequence = sorted(date_sequence)
             date_sequence = [date_sequence[i::n_groups] for i in range(n_groups)]
