@@ -29,13 +29,4 @@ def setup_database():
     yield db
 
     db.close()
-
-
-@pytest.fixture
-def fetch_public_holidays():
-    return FetchPublicHolidays(2022)
-
-
-@pytest.fixture
-def generate_seed():
-    return PCGRNG()
+    os.remove("./tests/test.db")

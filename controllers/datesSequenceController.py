@@ -282,9 +282,7 @@ class DatesSequenceController:
             l_bound,
             u_bound,
             n_elements,
-            self.ascending_order.isChecked()
-            or self.descending_order.isChecked()
-            or self.original_order.isChecked(),
+            order="original",
         )
 
         if n_groups > 1:

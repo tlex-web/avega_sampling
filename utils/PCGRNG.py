@@ -105,8 +105,8 @@ class PCGRNG:
         - list[datetime]: An array of unique random dates within the specified range.
         """
 
-        start_date_dt = datetime.strptime(start_date, "%Y-%m-%d")
-        end_date_dt = datetime.strptime(end_date, "%Y-%m-%d")
+        start_date_dt = datetime.strptime(str(start_date), "%Y-%m-%d")
+        end_date_dt = datetime.strptime(str(end_date), "%Y-%m-%d")
 
         if (end_date_dt - start_date_dt).days < length:
             raise ValueError(

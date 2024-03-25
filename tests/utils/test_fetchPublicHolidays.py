@@ -1,49 +1,86 @@
-import pytest
+import unittest
+import requests
+from unittest.mock import patch
+from datetime import date
 from utils.FetchPublicHolidays import FetchPublicHolidays
 
 
-@pytest.mark.parametrize("year", [2022, 2023, 2024])
-def test_fetch_public_holidays_valid_year(year):
-    fetcher = FetchPublicHolidays(year)
-    holidays = fetcher.get_public_holidays()
-    assert isinstance(holidays, list)
-    assert all(isinstance(holiday, dict) for holiday in holidays)
-    assert all("date" in holiday for holiday in holidays)
-    assert all("name" in holiday for holiday in holidays)
-    assert all("localName" in holiday for holiday in holidays)
-    assert all("countryCode" in holiday for holiday in holidays)
-    assert all("fixed" in holiday for holiday in holidays)
+class TestFetchPublicHolidays(unittest.TestCase):
+    def setUp(self):
+        self.fetch_holidays = FetchPublicHolidays()
+
+    def test_set_period_valid_years(self):
+        self.fetch_holidays.set_period(2022, 2023)
+        self.assertEqual(self.fetch_holidays.start_year, 2022)
+        self.assertEqual(self.fetch_holidays.end_year, 2023)
+
+    def test_set_period_invalid_years(self):
+        with self.assertRaises(ValueError):
+            self.fetch_holidays.set_period(1999, 2101)
+
+    @patch("utils.FetchPublicHolidays.requests.get")
+    def test_get_public_holidays_success(self, mock_get):
+        mock_response = mock_get.return_value
+        mock_response.status_code = 200
+        mock_response.text = '[{"date": "2022-01-01", "name": "New Year\'s Day", "localName": "New Year\'s Day", "countryCode": "LU", "fixed": true}]'
+
+        self.fetch_holidays.set_period(2022, 2022)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertEqual(len(holidays), 1)
+        self.assertEqual(holidays[0]["date"], "2022/01/01")
+        self.assertEqual(holidays[0]["name"], "New Year's Day")
+
+    @patch("utils.FetchPublicHolidays.requests.get")
+    def test_get_public_holidays_http_error(self, mock_get):
+        mock_response = mock_get.return_value
+        mock_response.status_code = 404
+
+        self.fetch_holidays.set_period(2022, 2022)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertIsNone(holidays)
+
+    @patch("utils.FetchPublicHolidays.requests.get")
+    def test_get_public_holidays_request_exception(self, mock_get):
+        mock_get.side_effect = requests.exceptions.RequestException("Request exception")
+
+        self.fetch_holidays.set_period(2022, 2022)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertIsNone(holidays)
+
+    @patch("utils.FetchPublicHolidays.requests.get")
+    def test_get_public_holidays_generic_exception(self, mock_get):
+        mock_get.side_effect = Exception("Generic exception")
+
+        self.fetch_holidays.set_period(2022, 2022)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertIsNone(holidays)
+
+    def test_get_public_holidays_invalid_year_type(self):
+        with self.assertRaises(ValueError):
+            self.fetch_holidays.set_period("2022", "2023")
+
+    def test_get_public_holidays_invalid_year_range(self):
+        with self.assertRaises(ValueError):
+            self.fetch_holidays.set_period(1999, 2101)
+
+    def test_get_one_year_period(self):
+        self.fetch_holidays.set_period(2022, 2022)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertIsNotNone(holidays)
+        self.assertEqual(len(holidays), 12)
+
+    def test_get_multiple_year_period(self):
+        self.fetch_holidays.set_period(2022, 2023)
+        holidays = self.fetch_holidays.get_public_holidays()
+
+        self.assertIsNotNone(holidays)
+        self.assertTrue(len(holidays) > 1)
 
 
-@pytest.mark.parametrize("year", [1999, 2101])
-def test_fetch_public_holidays_invalid_year(year):
-    with pytest.raises(ValueError):
-        FetchPublicHolidays(year)
-
-
-def test_fetch_public_holidays_api_failure(requests_mock):
-    requests_mock.get(
-        "https://date.nager.at/api/v3/publicholidays/2022/LU", status_code=500
-    )
-    fetcher = FetchPublicHolidays(2022)
-    holidays = fetcher.get_public_holidays()
-    assert holidays is None
-
-
-def test_fetch_public_holidays_request_exception(requests_mock):
-    requests_mock.get(
-        "https://date.nager.at/api/v3/publicholidays/2022/LU",
-        exc=requests.exceptions.RequestException,
-    )
-    fetcher = FetchPublicHolidays(2022)
-    holidays = fetcher.get_public_holidays()
-    assert holidays is None
-
-
-def test_fetch_public_holidays_other_exception(requests_mock):
-    requests_mock.get(
-        "https://date.nager.at/api/v3/publicholidays/2022/LU", exc=Exception
-    )
-    fetcher = FetchPublicHolidays(2022)
-    holidays = fetcher.get_public_holidays()
-    assert holidays is None
+if __name__ == "__main__":
+    unittest.main()

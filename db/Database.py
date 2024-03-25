@@ -2,17 +2,18 @@ import sys
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 
 from utils.Logger import log, LogEnvironment
+from config import DB_TYPE
 
 
 class Database:
-    def __init__(self, db_file: str | None):
+    def __init__(self, db_file=None):
         """Database class for SQLite3
 
         Args:
-            db_file (str | bytes): String or bytes object pointing to the database file
+            db_file (str, optional): Path to the database file. Defaults to None.
         """
-        self.db_file = db_file if db_file != None else ":memory:"
-        self.db = QSqlDatabase.addDatabase("QSQLITE")
+        self.db_file = db_file if db_file is not None else ":memory:"
+        self.db = QSqlDatabase.addDatabase(DB_TYPE)
         self.db.setDatabaseName(self.db_file)
         self.conn = None
 
