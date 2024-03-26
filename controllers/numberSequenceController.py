@@ -159,7 +159,9 @@ class NumberSequenceController:
 
         self.pcgrng.seed(seed_value)
 
-        numbers = self.pcgrng.get_unique_random_sequence(l_bound, u_bound, n_elements)
+        numbers = self.pcgrng.get_unique_random_number_sequence(
+            l_bound, u_bound, n_elements
+        )
 
         if n_groups > 1:
             numbers = sorted(numbers)
