@@ -258,6 +258,14 @@ class DatesSequenceController:
         if not valid_values:
             return
 
+        order = ""
+        if self.ascending_order.isChecked():
+            order = "ascending"
+        elif self.descending_order.isChecked():
+            order = "descending"
+        else:
+            order = "original"
+
         # Set the seed for the random date generator
 
         # 1) Check if the user has set a seed
@@ -282,7 +290,7 @@ class DatesSequenceController:
             l_bound,
             u_bound,
             n_elements,
-            order="original",
+            order,
         )
 
         if n_groups > 1:
