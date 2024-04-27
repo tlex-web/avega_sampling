@@ -180,6 +180,7 @@ class DatesSequenceController:
 
         n_groups = int(self.n_groups.text())
         n_elements = int(self.n_elements.text())
+        print(l_bound, u_bound)
 
         # Check if the user wants to exclude certain days
         excluded_days = []
@@ -193,8 +194,8 @@ class DatesSequenceController:
         else:
             if excluded_days.count(6) > 0:
                 excluded_days.remove(6)
-        print(excluded_days)
-        dates = []  # Initialize the "dates" variable
+
+        dates = []
         from datetime import timedelta
 
         if (
@@ -215,10 +216,9 @@ class DatesSequenceController:
             dates = [
                 l_bound + timedelta(days=i) for i in range((u_bound - l_bound).days + 1)
             ]
-        print(dates)
+
         # Exclude the selected days
         dates = [date for date in dates if date.weekday() not in excluded_days]
-        print(dates)
 
         # Initialize a flag for valid values
         valid_values = True
@@ -293,18 +293,22 @@ class DatesSequenceController:
             order,
         )
 
-        if n_groups > 1:
-            date_sequence = sorted(date_sequence)
-            date_sequence = [date_sequence[i::n_groups] for i in range(n_groups)]
-        else:
-            date_sequence = [date_sequence]
-
+        # Sort the date sequence based on the user's preference
         if self.ascending_order.isChecked():
             date_sequence = [sorted(group) for group in date_sequence]
         elif self.descending_order.isChecked():
             date_sequence = [sorted(group, reverse=True) for group in date_sequence]
         else:
             date_sequence = [group for group in date_sequence]
+
+        if n_groups > 1:
+            # crate 2 dimensional matrix n*m where n is the number of groups and m is the number of elements
+            date_matrix = [[]]
+            for i in range(n_groups):
+                date_matrix.append(date_sequence[:n_elements])
+                date_sequence = date_sequence[n_elements:]
+        else:
+            date_sequence = [date_sequence]
 
         if self.output_window.isVisible():
             self.output_window.close()
@@ -315,7 +319,7 @@ class DatesSequenceController:
         self.output_window.output_element.clear()
         self.output_window.output_element.append(sequence_name)
         self.output_window.output_element.append("")
-        for i, group in enumerate(date_sequence):
-            self.output_window.output_element.append(f"Group {i+1}:")
-            self.output_window.output_element.append(str(group))
+        for group in date_matrix:
+            for date in group:
+                self.output_window.output_element.append(date.strftime("%Y-%m-%d"))
             self.output_window.output_element.append("")
