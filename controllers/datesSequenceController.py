@@ -302,11 +302,14 @@ class DatesSequenceController:
             date_sequence = [group for group in date_sequence]
 
         if n_groups > 1:
-            # crate 2 dimensional matrix n*m where n is the number of groups and m is the number of elements
-            date_matrix = [[]]
-            for i in range(n_groups):
-                date_matrix.append(date_sequence[:n_elements])
-                date_sequence = date_sequence[n_elements:]
+            # 2 dimensional matrix n*m where n is the number of groups and m is the number of elements
+            for i in range(len(date_sequence)):
+                date_sequence[i] = [date_sequence[i][j] for j in range(n_elements)]
+            date_matrix = [
+                date_sequence[i : i + n_elements]
+                for i in range(0, len(date_sequence), n_elements)
+            ]
+
         else:
             date_sequence = [date_sequence]
 
@@ -319,7 +322,10 @@ class DatesSequenceController:
         self.output_window.output_element.clear()
         self.output_window.output_element.append(sequence_name)
         self.output_window.output_element.append("")
-        for group in date_matrix:
-            for date in group:
-                self.output_window.output_element.append(date.strftime("%Y-%m-%d"))
-            self.output_window.output_element.append("")
+
+        if n_groups > 1:
+            for i in range(n_groups):
+                self.output_window.output_element.append(f"Group {i+1}")
+                for j in range(n_elements):
+                    self.output_window.output_element.append(f"{date_matrix[i][j]}")
+                self.output_window.output_element.append("")
