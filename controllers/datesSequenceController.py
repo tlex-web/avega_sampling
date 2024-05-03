@@ -254,6 +254,21 @@ class DatesSequenceController:
             self.n_elements.setToolTip("Increase the number of elements to generate")
             valid_values = False
 
+        if len(
+            [l_bound + timedelta(days=x) for x in range((u_bound - l_bound).days + 1)]
+        ) < (n_elements * n_groups):
+            self.n_elements.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_elements.setToolTip(
+                "Extend the period or reduce the number of elements"
+            )
+            self.n_groups.setStyleSheet("color: red; border: 1px solid red;")
+            self.n_groups.setToolTip("Extend the period or reduce the number of groups")
+            self.l_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.l_bound.setToolTip("Extend the period or reduce the number of groups")
+            self.u_bound.setStyleSheet("color: red; border: 1px solid red;")
+            self.u_bound.setToolTip("Extend the period or reduce the number of groups")
+            valid_values = False
+
         # If any of the values are invalid, return
         if not valid_values:
             return
@@ -289,7 +304,7 @@ class DatesSequenceController:
         date_sequence = self.pcgrng.create_unique_date_sequence(
             l_bound,
             u_bound,
-            n_elements,
+            (n_elements * n_groups),
             order,
         )
 
@@ -301,17 +316,17 @@ class DatesSequenceController:
         else:
             date_sequence = [group for group in date_sequence]
 
+        date_output = {}
+
         if n_groups > 1:
-            # 2 dimensional matrix n*m where n is the number of groups and m is the number of elements
-            for i in range(len(date_sequence)):
-                date_sequence[i] = [date_sequence[i][j] for j in range(n_elements)]
-            date_matrix = [
-                date_sequence[i : i + n_elements]
-                for i in range(0, len(date_sequence), n_elements)
-            ]
+            s = 0
+            for i in range(n_groups):
+
+                date_output[f"group_{i + 1}"] = date_sequence[s : s + n_elements]
+                s += n_elements
 
         else:
-            date_sequence = [date_sequence]
+            date_output["group_1"] = date_sequence
 
         if self.output_window.isVisible():
             self.output_window.close()
@@ -323,9 +338,8 @@ class DatesSequenceController:
         self.output_window.output_element.append(sequence_name)
         self.output_window.output_element.append("")
 
-        if n_groups > 1:
-            for i in range(n_groups):
-                self.output_window.output_element.append(f"Group {i+1}")
-                for j in range(n_elements):
-                    self.output_window.output_element.append(f"{date_matrix[i][j]}")
-                self.output_window.output_element.append("")
+        for group, dates in date_output.items():
+            self.output_window.output_element.append(group)
+            for date in dates:
+                self.output_window.output_element.append(date.strftime("%Y-%m-%d"))
+            self.output_window.output_element.append("")
