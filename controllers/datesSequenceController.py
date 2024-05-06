@@ -310,11 +310,9 @@ class DatesSequenceController:
 
         # Sort the date sequence based on the user's preference
         if self.ascending_order.isChecked():
-            date_sequence = [sorted(group) for group in date_sequence]
+            date_sequence = sorted(date_sequence)
         elif self.descending_order.isChecked():
-            date_sequence = [sorted(group, reverse=True) for group in date_sequence]
-        else:
-            date_sequence = [group for group in date_sequence]
+            date_sequence = sorted(date_sequence, reverse=True)
 
         date_output = {}
 
