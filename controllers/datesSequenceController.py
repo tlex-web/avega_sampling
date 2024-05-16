@@ -43,6 +43,9 @@ class UIElementsDatesSequence(NamedTuple):
     descending_order: QRadioButton
 
 
+## still issues with exclusion of dates and bank holidays
+
+
 class DatesSequenceController(BaseSequenceController):
 
     def __init__(
@@ -64,7 +67,7 @@ class DatesSequenceController(BaseSequenceController):
         self.public_holidays = None
 
         # Setup signals and slots for number sequence-related actions
-        self.ui_elements.exclude_bank_holidays.clicked.connect(self.exclude_holidays)
+        self.ui_elements.exclude_bank_holidays.clicked.connect(self.get_holidays)
         self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_dates.clicked.connect(self.print_sequence)
 
@@ -214,6 +217,53 @@ class DatesSequenceController(BaseSequenceController):
             self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
             self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
 
+    def get_holidays(self) -> list | None:
+        """
+        Exclude bank holidays from the date generation.
+        """
+
+        # Check button state, since checking and unchecking the button trigger the same signal
+        if not self.ui_elements.exclude_bank_holidays.isChecked():
+            self.public_holidays = None
+            return
+
+        # Get the public holidays in the period
+        self.fetch_public_holidays.set_period(
+            self.ui_elements.l_bound.date().toPyDate().year,
+            self.ui_elements.u_bound.date().toPyDate().year,
+        )
+
+        if self.loading_window.isVisible():
+            self.loading_window.close()
+        else:
+            self.loading_window.show()
+
+        # animate a loading animation in the progress bar while the public holidays are being fetched
+        animation = QPropertyAnimation(self.loading_window.progressBar, b"value")
+        animation.setDuration(30000)
+        animation.setStartValue(0)
+        animation.setEndValue(100)
+        animation.start()
+
+        public_holidays = self.fetch_public_holidays.get_public_holidays()
+
+        # Stop the loading animation
+        if public_holidays is not None:
+            animation.stop()
+            self.loading_window.close()
+
+        # Stop the loading animation after 30000ms and display an error message
+        else:
+            animation.stop()
+            self.loading_window.close()
+            self.loading_window.progressBar.setValue(100)
+            self.loading_window.progressBar.setStyleSheet("background-color: red;")
+            self.loading_window.progressBar.setTextVisible(True)
+            self.loading_window.progressBar.setFormat("Failed to fetch public holidays")
+            self.loading_window.show()
+
+        return public_holidays
+
     def generate_sequence(self):
 
         self.check_input_fields()
@@ -233,16 +283,15 @@ class DatesSequenceController(BaseSequenceController):
                     excluded_days.remove(6)
 
             dates = []
+            public_holidays = self.get_holidays()
 
             if (
                 self.ui_elements.exclude_bank_holidays.isChecked()
                 and self.public_holidays is not None
                 and len(self.public_holidays) > 0
             ):
-                if self.public_holidays is not None:
-                    public_holidays = [
-                        holiday["date"] for holiday in self.public_holidays
-                    ]
+                if public_holidays is not None:
+                    public_holidays = [holiday["date"] for holiday in public_holidays]
                     dates = [date for date in dates if date not in public_holidays]
                 else:
                     self.ui_elements.exclude_bank_holidays.setStyleSheet(
@@ -300,54 +349,6 @@ class DatesSequenceController(BaseSequenceController):
             return
 
         return date_sequence
-
-    def exclude_holidays(self):
-        """
-        Exclude bank holidays from the date generation.
-        """
-
-        # Check button state, since both events are triggered by the same signal
-        if not self.ui_elements.exclude_bank_holidays.isChecked():
-            self.public_holidays = None
-            return
-
-        # Get the public holidays in the period
-        self.fetch_public_holidays.set_period(
-            self.ui_elements.l_bound.date().toPyDate().year,
-            self.ui_elements.u_bound.date().toPyDate().year,
-        )
-
-        if self.loading_window.isVisible():
-            self.loading_window.close()
-        else:
-            self.loading_window.show()
-
-        # animate a loading animation in the progress bar while the public holidays are being fetched
-        animation = QPropertyAnimation(self.loading_window.progressBar, b"value")
-        animation.setDuration(1000)
-        animation.setStartValue(0)
-        animation.setLoopCount(-1)
-        animation.setEndValue(100)
-        animation.start()
-
-        public_holidays = self.fetch_public_holidays.get_public_holidays()
-
-        # Stop the loading animation
-        if public_holidays is not None:
-            animation.stop()
-            self.loading_window.close()
-
-        # Stop the loading animation after 30000ms and display an error message
-        else:
-            animation.stop()
-            self.loading_window.close()
-            self.loading_window.progressBar.setValue(100)
-            self.loading_window.progressBar.setStyleSheet("background-color: red;")
-            self.loading_window.progressBar.setTextVisible(True)
-            self.loading_window.progressBar.setFormat("Failed to fetch public holidays")
-            self.loading_window.show()
-
-        self.public_holidays = public_holidays
 
     def print_sequence(self):
 
