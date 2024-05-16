@@ -10,14 +10,14 @@ from view.AboutWindow import Ui_Form as Ui_AboutWindow
 
 from controllers.seedController import SeedController
 from controllers.sessionController import SessionController
-from controllers.projectController import ProjectController
 from controllers.numberSequenceController import NumberSequenceController
 from controllers.datesSequenceController import DatesSequenceController
 from controllers.windowController import WindowController
 from controllers.menuController import MenuController
+from controllers.numberSequenceController import UIElementsNumberSequence
+from controllers.datesSequenceController import UIElementsDatesSequence
 
 
-from utils.PCGRNG import PCGRNG
 from db.Database import Database
 from config import DB_FILENAME
 
@@ -124,46 +124,50 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Number Sequence tab signals
         self.number_sequence_controller = NumberSequenceController(
-            self.btn_generate_numbers,
-            self.btn_seed_numbers,
-            self.btn_clear_numbers,
-            self.sequence_name_numbers,
-            self.lbound_numbers,
-            self.ubound_numbers,
-            self.label_numbers_lbound,
-            self.label_dates_ubound,
-            self.n_groups_numbers,
-            self.label_numbers_n_groups,
-            self.n_elements_numbers,
-            self.label_numbers_n_elements,
-            self.radiobutton_org_numbers,
-            self.radiobutton_asc_numbers,
-            self.radiobutton_desc_numbers,
-            self.output_window,
+            ui_elements=UIElementsNumberSequence(
+                btn_generate_numbers=self.btn_generate_numbers,
+                btn_seed_numbers=self.btn_seed_numbers,
+                btn_clear_numbers=self.btn_clear_numbers,
+                sequence_name=self.sequence_name_numbers,
+                l_bound=self.lbound_numbers,
+                u_bound=self.ubound_numbers,
+                label_lbound=self.label_numbers_lbound,
+                label_ubound=self.label_numbers_ubound,
+                n_groups=self.n_groups_numbers,
+                label_n_groups=self.label_numbers_n_groups,
+                n_elements=self.n_elements_numbers,
+                label_n_elements=self.label_numbers_n_elements,
+                original_order=self.radiobutton_org_numbers,
+                ascending_order=self.radiobutton_asc_numbers,
+                descending_order=self.radiobutton_desc_numbers,
+            ),
+            output_window=self.output_window,
         )
 
         # Dates Sequence tab signals
         self.dates_sequence_controller = DatesSequenceController(
-            self.btn_generate_dates,
-            self.btn_clear_dates,
-            self.exclude_bank_holidays,
-            self.exclude_saturdays,
-            self.exclude_sundays,
-            self.sequence_name_dates,
-            self.lbound_dates,
-            self.ubound_dates,
-            self.label_dates_lbound,
-            self.label_dates_ubound,
-            self.exclude_dates,
-            self.n_groups_dates,
-            self.label_dates_n_groups,
-            self.n_elements_dates,
-            self.label_dates_n_elements,
-            self.radiobutton_org_dates,
-            self.radiobutton_asc_dates,
-            self.radiobutton_desc_dates,
-            self.output_window,
-            self.loading_window,
+            ui_elements=UIElementsDatesSequence(
+                btn_generate_dates=self.btn_generate_dates,
+                btn_clear_dates=self.btn_clear_dates,
+                exclude_bank_holidays=self.exclude_bank_holidays,
+                exclude_saturdays=self.exclude_saturdays,
+                exclude_sundays=self.exclude_sundays,
+                sequence_name=self.sequence_name_dates,
+                l_bound=self.lbound_dates,
+                u_bound=self.ubound_dates,
+                label_lbound=self.label_dates_lbound,
+                label_ubound=self.label_dates_ubound,
+                exclude_dates=self.exclude_dates,
+                n_groups=self.n_groups_dates,
+                label_n_groups=self.label_dates_n_groups,
+                n_elements=self.n_elements_dates,
+                label_n_elements=self.label_dates_n_elements,
+                original_order=self.radiobutton_org_dates,
+                ascending_order=self.radiobutton_asc_dates,
+                descending_order=self.radiobutton_desc_dates,
+            ),
+            output_window=self.output_window,
+            loading_window=self.loading_window,
         )
 
         # Seed Window signals

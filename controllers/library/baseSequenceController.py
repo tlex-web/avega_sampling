@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class BaseSequenceController(ABC):
 
-    def __init__(self, view, models, pcgrng, *args, **kwargs):
+    def __init__(self, view, models, pcgrng):
         self.view = view
         self.models = models
         self.pcgrng = pcgrng
@@ -13,19 +13,15 @@ class BaseSequenceController(ABC):
         pass
 
     @abstractmethod
-    def clear_numbers(self):
+    def clear_fields(self):
+        pass
+
+    @abstractmethod
+    def check_input_fields(self):
         pass
 
     @abstractmethod
     def generate_sequence(self):
-        pass
-
-    @abstractmethod
-    def sort_sequence(self):
-        pass
-
-    @abstractmethod
-    def group_sequence(self):
         pass
 
     @abstractmethod

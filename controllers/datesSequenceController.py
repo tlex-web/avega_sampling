@@ -12,6 +12,8 @@ from PyQt6.QtCore import QPropertyAnimation
 from datetime import timedelta
 from typing import NamedTuple
 
+from controllers.library.baseSequenceController import BaseSequenceController
+
 from utils.PCGRNG import PCGRNG
 from utils.FetchPublicHolidays import FetchPublicHolidays
 
@@ -20,7 +22,7 @@ from models.User import User
 from config import SESSION_NAME
 
 
-class UIElements(NamedTuple):
+class UIElementsDatesSequence(NamedTuple):
     btn_generate_dates: QPushButton
     btn_clear_dates: QPushButton
     exclude_bank_holidays: QCheckBox
@@ -41,11 +43,11 @@ class UIElements(NamedTuple):
     descending_order: QRadioButton
 
 
-class DatesSequenceController:
+class DatesSequenceController(BaseSequenceController):
 
     def __init__(
         self,
-        ui_elements: UIElements,
+        ui_elements: UIElementsDatesSequence,
         output_window,
         loading_window,
     ) -> None:
@@ -63,7 +65,7 @@ class DatesSequenceController:
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.exclude_bank_holidays.clicked.connect(self.exclude_holidays)
-        self.ui_elements.btn_clear_dates.clicked.connect(self.clear_dates)
+        self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_dates.clicked.connect(self.print_sequence)
 
     def check_session(self):
@@ -84,6 +86,45 @@ class DatesSequenceController:
             seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
 
         self.pcgrng.seed(seed_value)
+
+    def clear_fields(self):
+        """
+        Clear the input fields for date generation and reset placeholder values.
+        """
+
+        # Clear the input fields and reset placeholder values
+        self.ui_elements.sequence_name.clear()
+        self.ui_elements.sequence_name.setPlaceholderText("Enter sequence name")
+
+        self.ui_elements.l_bound.clear()
+        self.ui_elements.l_bound.setDate(self.ui_elements.l_bound.minimumDate())
+
+        self.ui_elements.u_bound.clear()
+        self.ui_elements.u_bound.setDate(self.ui_elements.u_bound.maximumDate())
+
+        self.ui_elements.exclude_dates.clearMask()
+
+        self.ui_elements.n_groups.clear()
+        self.ui_elements.n_groups.setValue(1)
+
+        self.ui_elements.n_elements.clear()
+        self.ui_elements.n_elements.setValue(0)
+
+        self.ui_elements.original_order.setChecked(True)
+        self.ui_elements.ascending_order.setChecked(False)
+        self.ui_elements.descending_order.setChecked(False)
+
+        # Reset the stylesheets and tooltips for the input fields
+        self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
+        self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
+        self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+        self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
+        self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
+        self.ui_elements.sequence_name.setToolTip("")
+        self.ui_elements.l_bound.setToolTip("")
+        self.ui_elements.u_bound.setToolTip("")
+        self.ui_elements.n_groups.setToolTip("")
+        self.ui_elements.n_elements.setToolTip("")
 
     def check_input_fields(self):
         # Check if the values are valid
@@ -307,45 +348,6 @@ class DatesSequenceController:
             self.loading_window.show()
 
         self.public_holidays = public_holidays
-
-    def clear_dates(self):
-        """
-        Clear the input fields for date generation and reset placeholder values.
-        """
-
-        # Clear the input fields and reset placeholder values
-        self.ui_elements.sequence_name.clear()
-        self.ui_elements.sequence_name.setPlaceholderText("Enter sequence name")
-
-        self.ui_elements.l_bound.clear()
-        self.ui_elements.l_bound.setDate(self.ui_elements.l_bound.minimumDate())
-
-        self.ui_elements.u_bound.clear()
-        self.ui_elements.u_bound.setDate(self.ui_elements.u_bound.maximumDate())
-
-        self.ui_elements.exclude_dates.clearMask()
-
-        self.ui_elements.n_groups.clear()
-        self.ui_elements.n_groups.setValue(1)
-
-        self.ui_elements.n_elements.clear()
-        self.ui_elements.n_elements.setValue(0)
-
-        self.ui_elements.original_order.setChecked(True)
-        self.ui_elements.ascending_order.setChecked(False)
-        self.ui_elements.descending_order.setChecked(False)
-
-        # Reset the stylesheets and tooltips for the input fields
-        self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
-        self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-        self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
-        self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
-        self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
-        self.ui_elements.sequence_name.setToolTip("")
-        self.ui_elements.l_bound.setToolTip("")
-        self.ui_elements.u_bound.setToolTip("")
-        self.ui_elements.n_groups.setToolTip("")
-        self.ui_elements.n_elements.setToolTip("")
 
     def print_sequence(self):
 

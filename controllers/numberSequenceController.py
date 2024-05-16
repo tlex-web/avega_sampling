@@ -1,14 +1,14 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
 from typing import NamedTuple
 
-from baseSequenceController import BaseSequenceController
+from controllers.library.baseSequenceController import BaseSequenceController
 from utils.PCGRNG import PCGRNG
 from models.Seed import Seed
 from models.User import User
 from config import SESSION_NAME
 
 
-class UIElements(NamedTuple):
+class UIElementsNumberSequence(NamedTuple):
     btn_generate_numbers: QPushButton
     btn_seed_numbers: QPushButton
     btn_clear_numbers: QPushButton
@@ -30,7 +30,7 @@ class NumberSequenceController(BaseSequenceController):
 
     def __init__(
         self,
-        ui_elements: UIElements,
+        ui_elements: UIElementsNumberSequence,
         output_window,
     ) -> None:
         """
@@ -44,7 +44,7 @@ class NumberSequenceController(BaseSequenceController):
         self.pcgrng = PCGRNG()
 
         # Setup signals and slots for number sequence-related actions
-        self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_numbers)
+        self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_numbers.clicked.connect(self.print_sequence)
 
     def check_session(self):
@@ -67,7 +67,7 @@ class NumberSequenceController(BaseSequenceController):
 
         self.pcgrng.seed(seed_value)
 
-    def clear_numbers(self):
+    def clear_fields(self):
         """
         Clears the input fields for number generation.
         """
@@ -235,11 +235,10 @@ class NumberSequenceController(BaseSequenceController):
 
         # print the number_sequence
         self.output_window.output_element.clear()
-        self.output_window.output_element.append(self.ui_elements.sequence_name)
+        self.output_window.output_element.append(self.ui_elements.sequence_name.text())
         self.output_window.output_element.append("")
 
-        for group, dates in number_output.items():
-            self.output_window.output_element.append(group)
-            for date in dates:
-                self.output_window.output_element.append(date.strftime("%Y-%m-%d"))
-            self.output_window.output_element.append("")
+        for group, numbers in number_output.items():
+            self.output_window.output_element.append(f"{group}: {numbers}")
+
+        self.output_window.show()
