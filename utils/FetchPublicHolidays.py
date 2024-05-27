@@ -48,7 +48,6 @@ class FetchPublicHolidays:
         all_holidays = []
         if self.start_year is not None and self.end_year is not None:
             for year in range(self.start_year, self.end_year + 1):
-                # Your code here
                 try:
                     response = requests.get(
                         f"https://date.nager.at/api/v3/publicholidays/{year}/LU"
@@ -56,8 +55,6 @@ class FetchPublicHolidays:
                     response.raise_for_status()
 
                     holidays = json.loads(response.text)
-                    for holiday in holidays:
-                        holiday["date"] = holiday["date"].replace("-", "/")
 
                     all_holidays.extend(holidays)
 

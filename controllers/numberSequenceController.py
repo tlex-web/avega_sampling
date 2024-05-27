@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEd
 from typing import NamedTuple
 
 from controllers.library.baseSequenceController import BaseSequenceController
-from utils.PCGRNG import PCGRNG
+from models.Generators import RandomNumberSequenceGenerator
 from models.Seed import Seed
 from models.User import User
 from config import SESSION_NAME
@@ -41,11 +41,24 @@ class NumberSequenceController(BaseSequenceController):
         self.output_window = output_window
         self.seed_model = Seed()
         self.user_model = User()
-        self.pcgrng = PCGRNG()
+        self.rng = RandomNumberSequenceGenerator()
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_numbers.clicked.connect(self.print_sequence)
+
+        # Setup signals and slots for seed-related actions
+        self.rng.error_rng_generation.connect(self.error_rng_generation)
+
+    def error_rng_generation(self, error_message):
+        """
+        Displays an error message if the random number generation fails.
+        """
+
+        self.output_window.output_element.clear()
+        self.output_window.output_element.append("An error occurred")
+        self.output_window.output_element.append(error_message)
+        self.output_window.show()
 
     def check_session(self):
 
@@ -65,7 +78,7 @@ class NumberSequenceController(BaseSequenceController):
         else:
             seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
 
-        self.pcgrng.seed(seed_value)
+        self.rng.set_seed(seed_value)
 
     def clear_fields(self):
         """
@@ -193,7 +206,7 @@ class NumberSequenceController(BaseSequenceController):
         self.check_session()
 
         # Generate the random numbers
-        number_sequence = self.pcgrng.get_unique_random_number_sequence(
+        number_sequence = self.rng.generate_and_return_sequence(
             self.ui_elements.l_bound.value(),
             self.ui_elements.u_bound.value(),
             (self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value()),

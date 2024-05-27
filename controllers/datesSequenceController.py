@@ -9,12 +9,12 @@ from PyQt6.QtWidgets import (
     QDateEdit,
 )
 from PyQt6.QtCore import QPropertyAnimation
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import NamedTuple
 
 from controllers.library.baseSequenceController import BaseSequenceController
 
-from utils.PCGRNG import PCGRNG
+from models.Generators import RandomDatesSequenceGenerator
 from utils.FetchPublicHolidays import FetchPublicHolidays
 
 from models.Seed import Seed
@@ -63,13 +63,26 @@ class DatesSequenceController(BaseSequenceController):
         self.seed_model = Seed()
         self.user_model = User()
         self.fetch_public_holidays = FetchPublicHolidays()
-        self.pcgrng = PCGRNG()
+        self.rdg = RandomDatesSequenceGenerator()
         self.public_holidays = None
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.exclude_bank_holidays.clicked.connect(self.get_holidays)
         self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_dates.clicked.connect(self.print_sequence)
+
+        # Setup signals and slots for seed-related actions
+        self.rdg.error_rdg_generation.connect(self.error_rdg_generation)
+
+    def error_rdg_generation(self, error_message):
+        """
+        Displays an error message if the random date generation fails.
+        """
+
+        self.output_window.output_element.clear()
+        self.output_window.output_element.append("An error occurred")
+        self.output_window.output_element.append(error_message)
+        self.output_window.show()
 
     def check_session(self):
         # 1) Check if the user has set a seed
@@ -88,7 +101,7 @@ class DatesSequenceController(BaseSequenceController):
         else:
             seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
 
-        self.pcgrng.seed(seed_value)
+        self.rdg.set_seed(seed_value)
 
     def clear_fields(self):
         """
@@ -217,7 +230,7 @@ class DatesSequenceController(BaseSequenceController):
             self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
             self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
 
-    def get_holidays(self) -> list | None:
+    def get_holidays(self) -> list[date] | None:
         """
         Exclude bank holidays from the date generation.
         """
@@ -269,71 +282,20 @@ class DatesSequenceController(BaseSequenceController):
         self.check_input_fields()
 
         try:
-            # Check if the user wants to exclude certain days
-            excluded_days = []
-            if self.ui_elements.exclude_saturdays.isChecked():
-                excluded_days.append(5)  # Saturday
-            else:
-                if excluded_days.count(5) > 0:
-                    excluded_days.remove(5)
-            if self.ui_elements.exclude_sundays.isChecked():
-                excluded_days.append(6)  # Sunday
-            else:
-                if excluded_days.count(6) > 0:
-                    excluded_days.remove(6)
 
-            dates = []
-            public_holidays = self.get_holidays()
-
-            if (
-                self.ui_elements.exclude_bank_holidays.isChecked()
-                and self.public_holidays is not None
-                and len(self.public_holidays) > 0
-            ):
-                if public_holidays is not None:
-                    public_holidays = [holiday["date"] for holiday in public_holidays]
-                    dates = [date for date in dates if date not in public_holidays]
-                else:
-                    self.ui_elements.exclude_bank_holidays.setStyleSheet(
-                        "color: red; border: 1px solid red;"
-                    )
-                    self.ui_elements.exclude_bank_holidays.setToolTip(
-                        "Failed to fetch public holidays"
-                    )
-                    return
-            else:
-                dates = [
-                    self.ui_elements.u_bound.date().toPyDate() + timedelta(days=i)
-                    for i in range(
-                        (
-                            self.ui_elements.u_bound.date().toPyDate()
-                            - self.ui_elements.l_bound.date().toPyDate()
-                        ).days
-                        + 1
-                    )
-                ]
-
-            # Exclude the selected days
-            dates = [date for date in dates if date.weekday() not in excluded_days]
             # Set the seed for the random date generator
             self.check_session()
 
-            order = ""
-            if self.ui_elements.ascending_order.isChecked():
-                order = "ascending"
-            elif self.ui_elements.descending_order.isChecked():
-                order = "descending"
-            else:
-                order = "original"
-
-            date_sequence = self.pcgrng.create_unique_date_sequence(
+            date_sequence = self.rdg.generate_and_return_sequence(
                 self.ui_elements.l_bound.date().toPyDate(),
                 self.ui_elements.u_bound.date().toPyDate(),
                 (
                     self.ui_elements.n_elements.value()
                     * self.ui_elements.n_groups.value()
                 ),
-                order,
+                holidays=self.get_holidays(),
+                exclude_saturdays=self.ui_elements.exclude_saturdays.isChecked(),
+                exclude_sundays=self.ui_elements.exclude_sundays.isChecked(),
             )
         except ValueError as e:
             self.ui_elements.btn_generate_dates.setStyleSheet(
