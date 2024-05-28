@@ -72,7 +72,8 @@ class DatesSequenceController(BaseSequenceController):
         self.ui_elements.btn_generate_dates.clicked.connect(self.print_sequence)
 
         # Setup signals and slots for seed-related actions
-        self.rdg.error_rdg_generation.connect(self.error_rdg_generation)
+        # We must ignore the type of the signal, since the signal is overloaded
+        self.rdg.error_rdg_generation.connect(self.error_rdg_generation)  # type: ignore
 
     def error_rdg_generation(self, error_message):
         """

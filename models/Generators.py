@@ -17,6 +17,7 @@ class Generator(ABC):
 
 
 class RandomNumberSequenceGenerator(Generator):
+
     error_rng_generation = pyqtSignal(str, name="error_rng_generation")
 
     def __init__(self):
@@ -121,7 +122,7 @@ class RandomDatesSequenceGenerator(Generator):
         """
 
         try:
-            holidays_set = set(holidays)
+            holidays_set = set(holidays) if holidays else set()
             generated_dates = set()
 
             while len(generated_dates) < length:
