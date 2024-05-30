@@ -12,14 +12,14 @@ from PyQt6.QtCore import QPropertyAnimation
 from datetime import date, timedelta
 from typing import NamedTuple
 
-from controllers.library.baseSequenceController import BaseSequenceController
+from controllers.baseSequenceController import BaseSequenceController
 
 from models.Generators import RandomDatesSequenceGenerator
-from utils.FetchPublicHolidays import FetchPublicHolidays
+from library.helpers.PublicHolidays import PublicHolidays
+from library.custom_errors.InvalidInputError import InvalidInputError
 
 from models.Seed import Seed
 from models.User import User
-from config import SESSION_NAME
 
 
 class UIElementsDatesSequence(NamedTuple):
@@ -43,9 +43,6 @@ class UIElementsDatesSequence(NamedTuple):
     descending_order: QRadioButton
 
 
-## still issues with exclusion of dates and bank holidays
-
-
 class DatesSequenceController(BaseSequenceController):
 
     def __init__(
@@ -57,52 +54,22 @@ class DatesSequenceController(BaseSequenceController):
         """
         Initializes the number sequence controller.
         """
+        super().__init__(RandomDatesSequenceGenerator())
+
         self.ui_elements = ui_elements
         self.output_window = output_window
         self.loading_window = loading_window
         self.seed_model = Seed()
         self.user_model = User()
-        self.fetch_public_holidays = FetchPublicHolidays()
+        self.public_holidays = PublicHolidays()
         self.rdg = RandomDatesSequenceGenerator()
-        self.public_holidays = None
+        self.list_public_holidays = None
 
         # Setup signals and slots for number sequence-related actions
-        self.ui_elements.exclude_bank_holidays.clicked.connect(self.get_holidays)
         self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
-        self.ui_elements.btn_generate_dates.clicked.connect(self.print_sequence)
-
-        # Setup signals and slots for seed-related actions
-        # We must ignore the type of the signal, since the signal is overloaded
-        self.rdg.error_rdg_generation.connect(self.error_rdg_generation)  # type: ignore
-
-    def error_rdg_generation(self, error_message):
-        """
-        Displays an error message if the random date generation fails.
-        """
-
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append("An error occurred")
-        self.output_window.output_element.append(error_message)
-        self.output_window.show()
-
-    def check_session(self):
-        # 1) Check if the user has set a seed
-        # 2) If not, generate a seed
-        # 3) If yes, use the user's seed
-        # 4) Set the seed for the random number generator
-        user_dict = self.user_model.read_user_username(SESSION_NAME)
-
-        if user_dict is not None:
-            user_id = user_dict["user_id"]
-
-        seed = self.seed_model.read_seed(user_id)
-
-        if seed is not None:
-            seed_value = seed["seed_value"]
-        else:
-            seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
-
-        self.rdg.set_seed(seed_value)
+        self.ui_elements.btn_generate_dates.clicked.connect(
+            self.handle_generate_sequence_btn
+        )
 
     def clear_fields(self):
         """
@@ -143,54 +110,39 @@ class DatesSequenceController(BaseSequenceController):
         self.ui_elements.n_groups.setToolTip("")
         self.ui_elements.n_elements.setToolTip("")
 
+    def reset_ui(self):
+        """Reset UI elements to their default state."""
+
+        self.ui_elements.sequence_name.setStyleSheet("")
+        self.ui_elements.sequence_name.setToolTip("")
+
+        self.ui_elements.l_bound.setStyleSheet("")
+        self.ui_elements.l_bound.setToolTip("")
+
+        self.ui_elements.u_bound.setStyleSheet("")
+        self.ui_elements.u_bound.setToolTip("")
+
+        self.ui_elements.n_groups.setStyleSheet("")
+        self.ui_elements.n_groups.setToolTip("")
+
+        self.ui_elements.n_elements.setStyleSheet("")
+        self.ui_elements.n_elements.setToolTip("")
+
     def check_input_fields(self):
         # Check if the values are valid
         if self.ui_elements.sequence_name.text() == "":
-            self.ui_elements.sequence_name.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.sequence_name.setToolTip("Enter a sequence name")
-            return
-        else:
-            self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Sequence name cannot be empty")
         if (
             self.ui_elements.l_bound.date().toPyDate()
             >= self.ui_elements.u_bound.date().toPyDate()
         ):
-            self.ui_elements.l_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.l_bound.setToolTip(
-                "Lower bound must be greater than lower bound"
-            )
-            self.ui_elements.u_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.u_bound.setToolTip(
-                "Upper bound must be greater than lower bound"
-            )
-            return
-        else:
-            self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Lower bound must be less than upper bound")
 
         if self.ui_elements.n_groups.value() < 1:
-            self.ui_elements.n_groups.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.n_groups.setToolTip(
-                "Number of groups must be greater than 0"
-            )
-            return
-        else:
-            self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Number of groups must be greater than 0")
 
         if self.ui_elements.n_elements.value() < 1:
-            self.ui_elements.n_elements.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.n_elements.setToolTip(
-                "Number of elements must be greater than 0"
-            )
-            return
-        else:
-            self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Number of elements must be greater than 0")
 
         if len(
             [
@@ -204,32 +156,44 @@ class DatesSequenceController(BaseSequenceController):
                 )
             ]
         ) < (self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value()):
-            self.ui_elements.n_elements.setStyleSheet(
-                "color: red; border: 1px solid red;"
+            raise InvalidInputError(
+                "Extend the period or reduce the number of elements or groups"
             )
-            self.ui_elements.n_elements.setToolTip(
-                "Extend the period or reduce the number of elements"
-            )
-            self.ui_elements.n_groups.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.n_groups.setToolTip(
-                "Extend the period or reduce the number of groups"
-            )
-            self.ui_elements.l_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.l_bound.setToolTip(
-                "Extend the period or reduce the number of groups"
-            )
-            self.ui_elements.u_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.u_bound.setToolTip(
-                "Extend the period or reduce the number of groups"
-            )
-            return
-        else:
-            self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
-            self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
-            self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+
+    def update_ui_for_errors(self, error):
+        """Update UI elements to reflect input errors.
+
+        Args:
+            error (Exception): The error message
+        """
+
+        if "sequence name" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.sequence_name, str(error))
+        if "lower bound must be less than upper bound" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.u_bound, str(error))
+        if "number of groups" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.n_groups, str(error))
+        if "number of elements" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.n_elements, str(error))
+        if "range of numbers" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.u_bound, str(error))
+        if "extend the period" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.u_bound, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.n_elements, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.n_groups, str(error))
+        if "length of sequence" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.n_elements, str(error))
+
+    def update_ui_for_invalid_input(self, field, message):
+        """
+        Updates the UI elements for invalid input.
+        """
+
+        field.setStyleSheet("color: red; border: 1px solid red;")
+        field.setToolTip(message)
 
     def get_holidays(self) -> list[date] | None:
         """
@@ -238,11 +202,11 @@ class DatesSequenceController(BaseSequenceController):
 
         # Check button state, since checking and unchecking the button trigger the same signal
         if not self.ui_elements.exclude_bank_holidays.isChecked():
-            self.public_holidays = None
+            self.list_public_holidays = None
             return
 
         # Get the public holidays in the period
-        self.fetch_public_holidays.set_period(
+        self.public_holidays.set_period(
             self.ui_elements.l_bound.date().toPyDate().year,
             self.ui_elements.u_bound.date().toPyDate().year,
         )
@@ -254,12 +218,12 @@ class DatesSequenceController(BaseSequenceController):
 
         # animate a loading animation in the progress bar while the public holidays are being fetched
         animation = QPropertyAnimation(self.loading_window.progressBar, b"value")
-        animation.setDuration(30000)
+        animation.setDuration(3600)
         animation.setStartValue(0)
         animation.setEndValue(100)
-        animation.start()
+        animation.start(policy=QPropertyAnimation.DeletionPolicy.KeepWhenStopped)
 
-        public_holidays = self.fetch_public_holidays.get_public_holidays()
+        public_holidays = self.public_holidays.return_list_public_holidays()
 
         # Stop the loading animation
         if public_holidays is not None:
@@ -280,45 +244,32 @@ class DatesSequenceController(BaseSequenceController):
 
     def generate_sequence(self):
 
+        # Reset the UI elements
+        self.reset_ui()
+
         self.check_input_fields()
 
-        try:
+        # Set the seed for the random date generator
+        self.check_session()
 
-            # Set the seed for the random date generator
-            self.check_session()
-
-            date_sequence = self.rdg.generate_and_return_sequence(
-                self.ui_elements.l_bound.date().toPyDate(),
-                self.ui_elements.u_bound.date().toPyDate(),
-                (
-                    self.ui_elements.n_elements.value()
-                    * self.ui_elements.n_groups.value()
-                ),
-                holidays=self.get_holidays(),
-                exclude_saturdays=self.ui_elements.exclude_saturdays.isChecked(),
-                exclude_sundays=self.ui_elements.exclude_sundays.isChecked(),
-            )
-        except ValueError as e:
-            self.ui_elements.btn_generate_dates.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.btn_generate_dates.setToolTip(str(e))
-            return
-        except Exception as e:
-            self.ui_elements.btn_generate_dates.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.btn_generate_dates.setToolTip(str(e))
-            return
+        date_sequence = self.rdg.generate_and_return_sequence(
+            self.ui_elements.l_bound.date().toPyDate(),
+            self.ui_elements.u_bound.date().toPyDate(),
+            (self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value()),
+            holidays=self.get_holidays(),
+            exclude_saturdays=self.ui_elements.exclude_saturdays.isChecked(),
+            exclude_sundays=self.ui_elements.exclude_sundays.isChecked(),
+        )
 
         return date_sequence
 
-    def print_sequence(self):
+    def group_sequence(self, date_sequence):
 
-        date_sequence = self.generate_sequence()
-
-        if date_sequence is None:
-            return
+        # Sort the date sequence based on the user's preference
+        if self.ui_elements.ascending_order.isChecked():
+            date_sequence = sorted(date_sequence)
+        elif self.ui_elements.descending_order.isChecked():
+            date_sequence = sorted(date_sequence, reverse=True)
 
         date_output = {}
 
@@ -334,18 +285,31 @@ class DatesSequenceController(BaseSequenceController):
         else:
             date_output["group_1"] = date_sequence
 
-        if self.output_window.isVisible():
-            self.output_window.close()
-        else:
+        return date_output
+
+    def handle_generate_sequence_btn(self):
+
+        try:
+            date_sequence = self.generate_sequence()
+
+            date_output = self.group_sequence(date_sequence)
+
+            if self.output_window.isVisible():
+                self.output_window.close()
+            else:
+                self.output_window.show()
+
+            # print the date_sequence
+            self.output_window.output_element.clear()
+            self.output_window.output_element.append(
+                self.ui_elements.sequence_name.text()
+            )
+            self.output_window.output_element.append("")
+
+            for group, dates in date_output.items():
+                self.output_window.output_element.append(f"{group}: {dates}")
+
             self.output_window.show()
 
-        # print the date_sequence
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append(self.ui_elements.sequence_name.text())
-        self.output_window.output_element.append("")
-
-        for group, dates in date_output.items():
-            self.output_window.output_element.append(group)
-            for date in dates:
-                self.output_window.output_element.append(date.strftime("%Y-%m-%d"))
-            self.output_window.output_element.append("")
+        except InvalidInputError as e:
+            self.update_ui_for_errors(e)

@@ -1,7 +1,7 @@
 import sys
 from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 from config import DB_TYPE
 
 

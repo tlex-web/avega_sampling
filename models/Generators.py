@@ -1,15 +1,28 @@
 from abc import ABC, abstractmethod
 from datetime import date, timedelta
-from PyQt6.QtCore import pyqtSignal
 
-from utils.PCGRNG import PCGRNG
+from library.Logger import log, LogEnvironment
+from library.custom_errors.InvalidInputError import InvalidInputError
+from library.PRNG.PCGRNG import PCGRNG
 
 
 class Generator(ABC):
 
-    @abstractmethod
-    def set_seed(self, seed: int):
-        pass
+    def __init__(self):
+        self.rng = PCGRNG()
+        self.seed = None
+
+    def set_seed(self, seed: int | None = None):
+        """Set the seed for the random number generator (Optional)
+
+        Args:
+            seed (int): Seed value as integer with a maximum value of 2^32
+        """
+        if seed is None:
+            seed = self.rng.get_random_number(1, 2**32 - 1)
+
+        self.seed = seed
+        self.rng.seed(seed)
 
     @abstractmethod
     def generate_and_return_sequence(self):
@@ -18,21 +31,11 @@ class Generator(ABC):
 
 class RandomNumberSequenceGenerator(Generator):
 
-    error_rng_generation = pyqtSignal(str, name="error_rng_generation")
-
     def __init__(self):
+        super().__init__()
 
         self.rng = PCGRNG()
         self.seed = None
-
-    def set_seed(self, seed: int):
-        """Set the seed for the random number generator (Optional)
-
-        Args:
-            seed (int): Seed value as integer with a maximum value of 2^128
-        """
-        self.seed = seed
-        self.rng.seed(seed)
 
     def generate_and_return_sequence(self, l_bound: int, u_bound: int, length: int):
         """Generates a sequence of unique random numbers
@@ -52,33 +55,28 @@ class RandomNumberSequenceGenerator(Generator):
         try:
             generated_numbers = set()
 
-            while len(generated_numbers) < length:
+            while len(generated_numbers) != length:
                 random_number = self.rng.get_random_number(l_bound, u_bound)
                 generated_numbers.add(random_number)
 
             return list(generated_numbers)
 
         except Exception as e:
-            self.error_rng_generation.emit(str(e))
-            return []
+            log.error(
+                f"Error generating random number sequence: {e}",
+                LogEnvironment.GENERATORS,
+            )
+            raise InvalidInputError(
+                "Invalid input values for number sequence generation"
+            )
 
 
 class RandomDatesSequenceGenerator(Generator):
-    error_rdg_generation = pyqtSignal(str, name="error_rdg_generation")
 
     def __init__(self):
 
         self.rng = PCGRNG()
         self.seed = None
-
-    def set_seed(self, seed: int):
-        """Set the seed for the random number generator (Optional)
-
-        Args:
-            seed (int): Seed value as integer with a maximum value of 2^128
-        """
-        self.seed = seed
-        self.rng.seed(seed)
 
     def generate_random_date(self, start_date: date, end_date: date):
         """
@@ -103,7 +101,7 @@ class RandomDatesSequenceGenerator(Generator):
         holidays: list[date] | None = None,
         exclude_saturdays: bool = False,
         exclude_sundays: bool = False,
-    ) -> list[date]:
+    ):
         """Generates a sequence of unique random dates
 
         Args:
@@ -121,24 +119,32 @@ class RandomDatesSequenceGenerator(Generator):
             list[datetime]: A list of unique random dates within the specified range
         """
 
-        try:
-            holidays_set = set(holidays) if holidays else set()
-            generated_dates = set()
+        total_days = (u_bound - l_bound).days + 1
+        if exclude_saturdays:
+            total_days -= ((u_bound - l_bound).days // 7) + 1
+        if exclude_sundays:
+            total_days -= ((u_bound - l_bound).days // 7) + 1
+        if holidays:
+            total_days -= len(set(holidays) & set(range((u_bound - l_bound).days + 1)))
 
-            while len(generated_dates) < length:
-                random_date = self.generate_random_date(l_bound, u_bound)
+        if length > total_days:
+            raise InvalidInputError(
+                "Length of sequence exceeds number of unique dates in the range"
+            )
 
-                if exclude_saturdays and random_date.weekday() == 5:
-                    continue
-                if exclude_sundays and random_date.weekday() == 6:
-                    continue
-                if random_date in holidays_set:
-                    continue
+        holidays_set = set(holidays) if holidays else set()
+        generated_dates = set()
 
-                generated_dates.add(random_date)
+        while len(generated_dates) != length:
+            random_date = self.generate_random_date(l_bound, u_bound)
 
-            return list(generated_dates)
+            if exclude_saturdays and random_date.weekday() == 5:
+                continue
+            if exclude_sundays and random_date.weekday() == 6:
+                continue
+            if random_date in holidays_set:
+                continue
 
-        except Exception as e:
-            self.error_rdg_generation.emit(str(e))
-            return []
+            generated_dates.add(random_date)
+
+        return list(generated_dates)

@@ -1,5 +1,5 @@
 from models.User import User
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 from config import SESSION_NAME
 
 """

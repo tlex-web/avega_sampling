@@ -1,6 +1,6 @@
 from PyQt6.QtSql import QSqlQuery
 
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 
 
 class User:

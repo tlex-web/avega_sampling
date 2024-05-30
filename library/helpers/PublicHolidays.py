@@ -1,9 +1,9 @@
 import requests
 import json
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 
 
-class FetchPublicHolidays:
+class PublicHolidays:
     def __init__(self):
         """Fetch dates of public holidays in Luxembourg for a given period and return them as a list"""
         self.start_year = None
@@ -38,7 +38,7 @@ class FetchPublicHolidays:
         else:
             raise ValueError("Years must be integers.")
 
-    def get_public_holidays(self):
+    def return_list_public_holidays(self):
         """Fetch the public holidays from the API and reformat the dates
 
         Returns:
@@ -58,6 +58,8 @@ class FetchPublicHolidays:
 
                     all_holidays.extend(holidays)
 
+                    holidays_dates = [holiday["date"] for holiday in holidays]
+
                     log.info(
                         f"Public holidays for {year} fetched successfully.",
                         LogEnvironment.UTILS,
@@ -73,4 +75,4 @@ class FetchPublicHolidays:
                     log.error(e, LogEnvironment.UTILS)
                     return None
 
-        return all_holidays
+        return holidays_dates

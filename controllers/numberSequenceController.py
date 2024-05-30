@@ -1,11 +1,11 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
 from typing import NamedTuple
 
-from controllers.library.baseSequenceController import BaseSequenceController
+from controllers.baseSequenceController import BaseSequenceController
 from models.Generators import RandomNumberSequenceGenerator
+from library.custom_errors.InvalidInputError import InvalidInputError
 from models.Seed import Seed
 from models.User import User
-from config import SESSION_NAME
 
 
 class UIElementsNumberSequence(NamedTuple):
@@ -36,6 +36,7 @@ class NumberSequenceController(BaseSequenceController):
         """
         Initializes the number sequence controller.
         """
+        super().__init__(RandomNumberSequenceGenerator())
 
         self.ui_elements = ui_elements
         self.output_window = output_window
@@ -45,40 +46,9 @@ class NumberSequenceController(BaseSequenceController):
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
-        self.ui_elements.btn_generate_numbers.clicked.connect(self.print_sequence)
-
-        # Setup signals and slots for seed-related actions
-        self.rng.error_rng_generation.connect(self.error_rng_generation)
-
-    def error_rng_generation(self, error_message):
-        """
-        Displays an error message if the random number generation fails.
-        """
-
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append("An error occurred")
-        self.output_window.output_element.append(error_message)
-        self.output_window.show()
-
-    def check_session(self):
-
-        # 1) Check if the user has set a seed
-        # 2) If not, generate a seed
-        # 3) If yes, use the user's seed
-        # 4) Set the seed for the random number generator
-        user_dict = self.user_model.read_user_username(SESSION_NAME)
-
-        if user_dict is not None:
-            user_id = user_dict["user_id"]
-
-        seed = self.seed_model.read_seed(user_id)
-
-        if seed is not None:
-            seed_value = seed["seed_value"]
-        else:
-            seed_value = self.pcgrng.get_random_number(1, 2**32 - 1)
-
-        self.rng.set_seed(seed_value)
+        self.ui_elements.btn_generate_numbers.clicked.connect(
+            self.handle_generate_sequence_btn
+        )
 
     def clear_fields(self):
         """
@@ -117,6 +87,24 @@ class NumberSequenceController(BaseSequenceController):
         self.ui_elements.n_groups.setToolTip("")
         self.ui_elements.n_elements.setToolTip("")
 
+    def reset_ui(self):
+        """Reset UI elements to their default state."""
+
+        self.ui_elements.sequence_name.setStyleSheet("")
+        self.ui_elements.sequence_name.setToolTip("")
+
+        self.ui_elements.l_bound.setStyleSheet("")
+        self.ui_elements.l_bound.setToolTip("")
+
+        self.ui_elements.u_bound.setStyleSheet("")
+        self.ui_elements.u_bound.setToolTip("")
+
+        self.ui_elements.n_groups.setStyleSheet("")
+        self.ui_elements.n_groups.setToolTip("")
+
+        self.ui_elements.n_elements.setStyleSheet("")
+        self.ui_elements.n_elements.setToolTip("")
+
     def check_input_fields(self):
         """
         Checks if the input fields are valid.
@@ -124,80 +112,65 @@ class NumberSequenceController(BaseSequenceController):
 
         # Check if the values are valid
         if self.ui_elements.sequence_name.text() == "":
-            self.ui_elements.sequence_name.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.sequence_name.setToolTip("Sequence name cannot be empty")
-            return
-        else:
-            self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Sequence name cannot be empty")
 
         if self.ui_elements.l_bound.value() >= self.ui_elements.u_bound.value():
-            self.ui_elements.l_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.l_bound.setToolTip(
-                "Lower bound must be less than upper bound"
-            )
-            self.ui_elements.u_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.u_bound.setToolTip(
-                "Upper bound must be greater than lower bound"
-            )
-            return
-        else:
-            self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Lower bound must be less than the upper bound")
 
         if self.ui_elements.l_bound.value() == 0:
-            self.ui_elements.l_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.l_bound.setToolTip("Lower bound must be greater than 0")
-            return
-        else:
-            self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Lower bound must be greater than 0")
 
         if self.ui_elements.u_bound.value() == 0:
-            self.ui_elements.u_bound.setStyleSheet("color: red; border: 1px solid red;")
-            self.ui_elements.u_bound.setToolTip("Upper bound must be greater than 0")
-            return
-        else:
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
-            self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Upper bound must be greater than 0")
 
         if len(
             range(self.ui_elements.l_bound.value(), self.ui_elements.u_bound.value())
         ) < (self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value()):
-            self.ui_elements.n_elements.setStyleSheet(
-                "color: red; border: 1px solid red;"
+            raise InvalidInputError(
+                "The range of numbers must be greater than the number of elements"
             )
-            self.ui_elements.n_elements.setToolTip(
-                "Number of elements must be less than the range of the lower and upper bounds"
-            )
-            return
-        else:
-            self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
 
         if self.ui_elements.n_groups.value() == 0:
-            self.ui_elements.n_groups.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.n_groups.setToolTip(
-                "Number of groups must be greater than 0"
-            )
-            return
-        else:
-            self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Number of groups must be greater than 0")
 
         if self.ui_elements.n_elements.value() == 0:
-            self.ui_elements.n_elements.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.n_elements.setToolTip(
-                "Number of elements must be greater than 0"
-            )
-            return
-        else:
-            self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
+            raise InvalidInputError("Number of elements must be greater than 0")
+
+    def update_ui_for_errors(self, error):
+        """Update UI elements to reflect input errors.
+
+        Args:
+            error (Exception): The error message
+        """
+
+        if "sequence name" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.sequence_name, str(error))
+        if "lower bound" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+        if "upper bound" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.u_bound, str(error))
+        if "number of groups" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.n_groups, str(error))
+        if "number of elements" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.n_elements, str(error))
+        if "range of numbers" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+            self.update_ui_for_invalid_input(self.ui_elements.u_bound, str(error))
+        if "sequence generation" in str(error).lower():
+            self.update_ui_for_invalid_input(self.ui_elements.l_bound, str(error))
+
+    def update_ui_for_invalid_input(self, field, message):
+        """
+        Updates the UI elements for invalid input.
+        """
+
+        field.setStyleSheet("color: red; border: 1px solid red;")
+        field.setToolTip(message)
 
     def generate_sequence(self):
+
+        # Reset the UI elements
+        self.reset_ui()
 
         # Check if the input fields are valid
         self.check_input_fields()
@@ -209,7 +182,7 @@ class NumberSequenceController(BaseSequenceController):
         number_sequence = self.rng.generate_and_return_sequence(
             self.ui_elements.l_bound.value(),
             self.ui_elements.u_bound.value(),
-            (self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value()),
+            self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value(),
         )
 
         return number_sequence
@@ -238,20 +211,26 @@ class NumberSequenceController(BaseSequenceController):
 
         return number_output
 
-    def print_sequence(self):
+    def handle_generate_sequence_btn(self):
 
-        # Generate the random numbers
-        number_sequence = self.generate_sequence()
+        try:
+            # Generate the random numbers
+            number_sequence = self.generate_sequence()
 
-        # Group the numbers based on the user's preference
-        number_output = self.group_sequence(number_sequence)
+            # Group the numbers based on the user's preference
+            number_output = self.group_sequence(number_sequence)
 
-        # print the number_sequence
-        self.output_window.output_element.clear()
-        self.output_window.output_element.append(self.ui_elements.sequence_name.text())
-        self.output_window.output_element.append("")
+            # print the number_sequence
+            self.output_window.output_element.clear()
+            self.output_window.output_element.append(
+                self.ui_elements.sequence_name.text()
+            )
+            self.output_window.output_element.append("")
 
-        for group, numbers in number_output.items():
-            self.output_window.output_element.append(f"{group}: {numbers}")
+            for group, numbers in number_output.items():
+                self.output_window.output_element.append(f"{group}: {numbers}")
 
-        self.output_window.show()
+            self.output_window.show()
+
+        except InvalidInputError as e:
+            self.update_ui_for_errors(e)

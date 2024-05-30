@@ -1,5 +1,5 @@
 from datetime import datetime, date, timedelta
-from utils.PCGRNG import PCGRNG
+from library.PRNG.PCGRNG import PCGRNG
 
 
 def test_seed():

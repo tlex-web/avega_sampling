@@ -2,10 +2,10 @@
 from PyQt6.QtWidgets import QPushButton
 
 from config import SESSION_NAME
-from utils.PCGRNG import PCGRNG
+from library.PRNG.PCGRNG import PCGRNG
 from models.Seed import Seed
 from models.User import User
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 
 
 class SeedController:

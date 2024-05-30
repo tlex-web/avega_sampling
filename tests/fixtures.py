@@ -2,8 +2,8 @@ import pytest
 import os
 
 from db.Database import Database
-from utils.FetchPublicHolidays import FetchPublicHolidays
-from utils.PCGRNG import PCGRNG
+from library.helpers.PublicHolidays import PublicHolidays
+from library.PRNG.PCGRNG import PCGRNG
 
 
 @pytest.fixture

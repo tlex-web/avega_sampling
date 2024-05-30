@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from utils.Logger import Logger, LogEnvironment
+from library.Logger import Logger, LogEnvironment
 
 
 def test_logger_init():

@@ -2,7 +2,7 @@ import unittest
 import requests
 from unittest.mock import patch
 from datetime import date
-from utils.FetchPublicHolidays import FetchPublicHolidays
+from library.helpers.PublicHolidays import FetchPublicHolidays
 
 
 class TestFetchPublicHolidays(unittest.TestCase):

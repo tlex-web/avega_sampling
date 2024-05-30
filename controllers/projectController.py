@@ -1,5 +1,5 @@
 from models.Projects import Project
-from utils.Logger import log, LogEnvironment
+from library.Logger import log, LogEnvironment
 
 
 class ProjectController:

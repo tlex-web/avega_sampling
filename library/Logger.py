@@ -15,6 +15,7 @@ class LogEnvironment(Enum):
     MODELS = "MODELS"
     VIEWS = "VIEWS"
     CONTROLLERS = "CONTROLLERS"
+    GENERATORS = "GENERATOR"
     UTILS = "UTILS"
     TESTS = "TESTS"
     MAIN = "MAIN"
