@@ -113,19 +113,19 @@ class DatesSequenceController(BaseSequenceController):
     def reset_ui(self):
         """Reset UI elements to their default state."""
 
-        self.ui_elements.sequence_name.setStyleSheet("")
+        self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
         self.ui_elements.sequence_name.setToolTip("")
 
-        self.ui_elements.l_bound.setStyleSheet("")
+        self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
         self.ui_elements.l_bound.setToolTip("")
 
-        self.ui_elements.u_bound.setStyleSheet("")
+        self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
         self.ui_elements.u_bound.setToolTip("")
 
-        self.ui_elements.n_groups.setStyleSheet("")
+        self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
         self.ui_elements.n_groups.setToolTip("")
 
-        self.ui_elements.n_elements.setStyleSheet("")
+        self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
         self.ui_elements.n_elements.setToolTip("")
 
     def check_input_fields(self):
@@ -270,6 +270,8 @@ class DatesSequenceController(BaseSequenceController):
             date_sequence = sorted(date_sequence)
         elif self.ui_elements.descending_order.isChecked():
             date_sequence = sorted(date_sequence, reverse=True)
+        elif self.ui_elements.original_order.isChecked():
+            date_sequence = date_sequence
 
         date_output = {}
 

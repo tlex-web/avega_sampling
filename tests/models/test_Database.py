@@ -1,69 +1,60 @@
 import pytest
-from unittest.mock import MagicMock
 from PyQt6.QtSql import QSqlQuery
 
 from db.Database import Database
 
 
 @pytest.fixture
-def database():
-    return Database(":memory:")
-
-
-def test_connect(database):
-    database.db.open = MagicMock(return_value=True)
-    database.connect()
-    assert database.conn == database.db
-    assert database.db.open.called
-
-
-def test_connect_failure(database):
-    database.db.open = MagicMock(return_value=False)
-    with pytest.raises(SystemExit):
-        database.connect()
-    assert not database.db.open.called
-
-
-def test_close(database):
-    database.db.isOpen = MagicMock(return_value=True)
-    database.close()
-    assert database.db.close.called
-
-
-def test_close_failure(database):
-    database.db.isOpen = MagicMock(return_value=False)
-    database.close()
-    assert not database.db.close.called
-
-
-def test_database_create_table(database):
-    db = database
+def setup_database():
+    db = Database(":memory:")
     db.connect()
     db.create_tables()
+    yield db
+    db.close()
 
+
+def test_connect(setup_database):
+    db = setup_database
+    assert db.conn is not None
+    assert db.db.isOpen()
+
+
+def test_close(setup_database):
+    db = setup_database
+    db.close()
+    assert not db.db.isOpen()
+
+
+def test_create_tables(setup_database):
+    db = setup_database
     query = QSqlQuery()
-    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
-    assert query.next()
-    assert query.value(0) == "users"
-
-    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='projects'")
-    assert query.next()
-    assert query.value(0) == "projects"
-
-    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='seeds'")
-    assert query.next()
-    assert query.value(0) == "seeds"
+    query.exec("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = []
+    while query.next():
+        tables.append(query.value(0))
+    assert "users" in tables
+    assert "projects" in tables
+    assert "seeds" in tables
 
 
-def test_drop_table(database):
-    database.query = MagicMock()
-    table_name = "users"
-    database.drop_table(table_name)
-    assert database.query.exec.called_with(f"DROP TABLE {table_name}")
+def test_drop_table(setup_database):
+    db = setup_database
+    db.drop_table("users")
+    query = QSqlQuery()
+    query.exec("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = []
+    while query.next():
+        tables.append(query.value(0))
+    assert "users" not in tables
 
 
-def test_clear_table(database):
-    database.query = MagicMock()
-    table_name = "users"
-    database.clear_table(table_name)
-    assert database.query.exec.called_with(f"DELETE FROM {table_name}")
+def test_clear_table(setup_database):
+    db = setup_database
+    query_insert = QSqlQuery()
+    query_insert.prepare("INSERT INTO users (username) VALUES (?)")
+    query_insert.addBindValue("test_user")
+    query_insert.exec()
+    db.clear_table("users")
+    query_select = QSqlQuery()
+    query_select.exec("SELECT * FROM users")
+    assert not query_select.next()

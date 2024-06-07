@@ -145,6 +145,6 @@ class RandomDatesSequenceGenerator(Generator):
             if random_date in holidays_set:
                 continue
 
-            generated_dates.add(random_date)
+            generated_dates.add(random_date.isoformat())
 
         return list(generated_dates)

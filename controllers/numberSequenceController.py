@@ -114,14 +114,20 @@ class NumberSequenceController(BaseSequenceController):
         if self.ui_elements.sequence_name.text() == "":
             raise InvalidInputError("Sequence name cannot be empty")
 
-        if self.ui_elements.l_bound.value() >= self.ui_elements.u_bound.value():
-            raise InvalidInputError("Lower bound must be less than the upper bound")
-
         if self.ui_elements.l_bound.value() == 0:
             raise InvalidInputError("Lower bound must be greater than 0")
 
         if self.ui_elements.u_bound.value() == 0:
             raise InvalidInputError("Upper bound must be greater than 0")
+
+        if self.ui_elements.l_bound.value() >= self.ui_elements.u_bound.value():
+            raise InvalidInputError("Lower bound must be less than the upper bound")
+
+        if self.ui_elements.n_groups.value() == 0:
+            raise InvalidInputError("Number of groups must be greater than 0")
+
+        if self.ui_elements.n_elements.value() == 0:
+            raise InvalidInputError("Number of elements must be greater than 0")
 
         if len(
             range(self.ui_elements.l_bound.value(), self.ui_elements.u_bound.value())
@@ -129,12 +135,6 @@ class NumberSequenceController(BaseSequenceController):
             raise InvalidInputError(
                 "The range of numbers must be greater than the number of elements"
             )
-
-        if self.ui_elements.n_groups.value() == 0:
-            raise InvalidInputError("Number of groups must be greater than 0")
-
-        if self.ui_elements.n_elements.value() == 0:
-            raise InvalidInputError("Number of elements must be greater than 0")
 
     def update_ui_for_errors(self, error):
         """Update UI elements to reflect input errors.
