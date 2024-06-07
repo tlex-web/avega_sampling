@@ -65,6 +65,8 @@ class PublicHolidays:
                         LogEnvironment.UTILS,
                     )
 
+                    return holidays_dates
+
                 except requests.exceptions.HTTPError as e:
                     log.error(e, LogEnvironment.UTILS)
                     return None
@@ -74,5 +76,3 @@ class PublicHolidays:
                 except Exception as e:
                     log.error(e, LogEnvironment.UTILS)
                     return None
-
-        return holidays_dates
