@@ -1,5 +1,8 @@
+from datetime import datetime
 import requests
 import json
+
+from library.Holiday import Holiday
 from library.Logger import log, LogEnvironment
 
 
@@ -42,8 +45,7 @@ class PublicHolidays:
         """Fetch the public holidays from the API and reformat the dates
 
         Returns:
-            list[dict]: List of public holidays, where each holiday is represented as a dictionary
-                        with keys 'date', 'name', 'localName', 'countryCode', and 'fixed'
+            list[Holiday]: List of public holidays, where each holiday is represented as a Holiday object
         """
         all_holidays = []
         if self.start_year is not None and self.end_year is not None:
@@ -56,16 +58,25 @@ class PublicHolidays:
 
                     holidays = json.loads(response.text)
 
-                    all_holidays.extend(holidays)
-
-                    holidays_dates = [holiday["date"] for holiday in holidays]
+                    for holiday in holidays:
+                        holiday_obj = Holiday(
+                            date=holiday["date"],
+                            name=holiday["name"],
+                            localName=holiday["localName"],
+                            countryCode=holiday["countryCode"],
+                            fixed=holiday["fixed"],
+                            types=holiday["types"],
+                        )
+                        all_holidays.append(
+                            datetime.strptime(holiday_obj.date, "%Y-%m-%d").date()
+                        )
 
                     log.info(
                         f"Public holidays for {year} fetched successfully.",
                         LogEnvironment.UTILS,
                     )
 
-                    return holidays_dates
+                    return all_holidays
 
                 except requests.exceptions.HTTPError as e:
                     log.error(e, LogEnvironment.UTILS)

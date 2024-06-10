@@ -1,10 +1,7 @@
 import pytest
 from library.PRNG.PCGRNG import PCGRNG
 
-
-@pytest.fixture
-def rng():
-    return PCGRNG()
+from fixtures import rng
 
 
 def test_seed(rng):

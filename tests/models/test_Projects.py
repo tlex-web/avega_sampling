@@ -1,11 +1,6 @@
-import pytest
 from PyQt6.QtSql import QSqlQuery
-from models.Projects import Project
 
-
-@pytest.fixture
-def project():
-    return Project()
+from fixtures import project, mocker
 
 
 def test_create_project(project, mocker):
@@ -17,7 +12,7 @@ def test_create_project(project, mocker):
     result = project.create_project(name, user_id)
 
     assert result is True
-    QSqlQuery.exec.assert_called_once_with()
+    mocker.exec.assert_called_once()
 
 
 def test_update_project(project, mocker):

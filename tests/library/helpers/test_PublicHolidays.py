@@ -1,90 +1,130 @@
 import pytest
-from datetime import datetime
+from datetime import date
+
 from library.helpers.PublicHolidays import PublicHolidays
 
+from fixtures import public_holidays
 
-def test_public_holidays():
-    # Create an instance of PublicHolidays
-    ph = PublicHolidays()
 
-    # Set the period for testing
-    ph.set_period(2022, 2023)
+def test_public_holidays(public_holidays):
 
-    # Call the return_list_public_holidays method
-    holidays = ph.return_list_public_holidays()
+    public_holidays.set_period(2022, 2023)
 
-    # Check if the returned holidays are not None
+    holidays = public_holidays.return_list_public_holidays()
+
     assert holidays is not None
-
-    # Check if the returned holidays are of type list
     assert isinstance(holidays, list)
 
-    # Check if the returned holidays contain dictionaries with the required keys
     for holiday in holidays:
-        assert isinstance(holiday, str)
+        assert isinstance(holiday, date)
 
-    # Check if the returned holidays are not empty
     assert len(holidays) > 0
-
-    # Check if the returned holidays are sorted by date
     assert holidays == sorted(holidays)
 
 
-def test_set_period():
-    ph = PublicHolidays()
+def test_set_period(public_holidays):
 
     # Test valid start and end years
-    ph.set_period(2022, 2023)
-    assert ph.start_year == 2022
-    assert ph.end_year == 2023
+    public_holidays.set_period(2022, 2023)
+    assert public_holidays.start_year == 2022
+    assert public_holidays.end_year == 2023
 
     # Test invalid start year
     with pytest.raises(ValueError):
-        ph.set_period(1999, 2023)
+        public_holidays.set_period(1999, 2023)
 
     # Test invalid end year
     with pytest.raises(ValueError):
-        ph.set_period(2022, 2101)
+        public_holidays.set_period(2022, 2101)
 
     # Test invalid start and end years
     with pytest.raises(ValueError):
-        ph.set_period(1999, 2101)
+        public_holidays.set_period(1999, 2101)
 
     # Test non-integer start year
     with pytest.raises(ValueError):
-        ph.set_period("2022", 2023)  # type: ignore
+        public_holidays.set_period("2022", 2023)  # type: ignore
 
     # Test non-integer end year
     with pytest.raises(ValueError):
-        ph.set_period(2022, "2023")  # type: ignore
+        public_holidays.set_period(2022, "2023")  # type: ignore
 
     # Test non-integer start and end years
     with pytest.raises(ValueError):
-        ph.set_period("2022", "2023")  # type: ignore
+        public_holidays.set_period("2022", "2023")  # type: ignore
 
 
-def test_return_list_public_holidays():
-    ph = PublicHolidays()
+def test_return_list_public_holidays(public_holidays):
 
     # Test return_list_public_holidays without setting the period
-    holidays = ph.return_list_public_holidays()
+    holidays = public_holidays.return_list_public_holidays()
     assert holidays is None
 
     # Test return_list_public_holidays with valid period
-    ph.set_period(2022, 2023)
-    holidays = ph.return_list_public_holidays()
+    public_holidays.set_period(2022, 2023)
+    holidays = public_holidays.return_list_public_holidays()
     assert isinstance(holidays, list)
 
     # Test return_list_public_holidays with invalid period
     with pytest.raises(Exception):
-        ph.set_period(2100, 2101)
-        holidays = ph.return_list_public_holidays()
+        public_holidays.set_period(2100, 2101)
+        holidays = public_holidays.return_list_public_holidays()
         assert holidays is None
 
 
-def test_returned_dates_valid_iso_format():
-    ph = PublicHolidays()
-    ph.set_period(2022, 2023)
-    holidays = ph.return_list_public_holidays()
+def test_returned_dates_valid_iso_format(public_holidays):
+
+    public_holidays = PublicHolidays()
+    public_holidays.set_period(2022, 2023)
+    holidays = public_holidays.return_list_public_holidays()
     for holiday in holidays if holidays is not None else []:
-        assert holiday == datetime.strptime(holiday, "%Y-%m-%d").date().isoformat()
+        assert holiday.strftime("%Y-%m-%d") == holiday.isoformat()
+
+
+def test_set_period_invalid_years(public_holidays):
+    # Test invalid start year
+    with pytest.raises(ValueError):
+        public_holidays.set_period(1999, 2023)
+
+    # Test invalid end year
+    with pytest.raises(ValueError):
+        public_holidays.set_period(2022, 2101)
+
+    # Test invalid start and end years
+    with pytest.raises(ValueError):
+        public_holidays.set_period(1999, 2101)
+
+
+def test_set_period_non_integer_years(public_holidays):
+    # Test non-integer start year
+    with pytest.raises(ValueError):
+        public_holidays.set_period("2022", 2023)
+
+    # Test non-integer end year
+    with pytest.raises(ValueError):
+        public_holidays.set_period(2022, "2023")
+
+    # Test non-integer start and end years
+    with pytest.raises(ValueError):
+        public_holidays.set_period("2022", "2023")
+
+
+def test_return_list_public_holidays_without_period(public_holidays):
+    # Test return_list_public_holidays without setting the period
+    holidays = public_holidays.return_list_public_holidays()
+    assert holidays is None
+
+
+def test_return_list_public_holidays_valid_period(public_holidays):
+    # Test return_list_public_holidays with valid period
+    public_holidays.set_period(2022, 2023)
+    holidays = public_holidays.return_list_public_holidays()
+    assert isinstance(holidays, list)
+
+
+def test_return_list_public_holidays_invalid_period(public_holidays):
+    # Test return_list_public_holidays with invalid period
+    with pytest.raises(Exception):
+        public_holidays.set_period(2100, 2101)
+        holidays = public_holidays.return_list_public_holidays()
+        assert holidays is None

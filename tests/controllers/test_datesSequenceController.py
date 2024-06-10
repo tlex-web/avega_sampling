@@ -1,72 +1,14 @@
-from sqlite3 import Date
 import pytest
-from PyQt6.QtWidgets import (
-    QPushButton,
-    QLabel,
-    QRadioButton,
-    QCheckBox,
-    QSpinBox,
-    QLineEdit,
-    QGroupBox,
-    QDateEdit,
-)
 from PyQt6.QtCore import QDate, QPropertyAnimation
 from PyQt6.QtWidgets import QProgressBar
 from datetime import date
-from unittest.mock import MagicMock, Mock, create_autospec, patch
+from unittest.mock import create_autospec
+
+
 from controllers.datesSequenceController import (
     DatesSequenceController,
-    UIElementsDatesSequence,
 )
-from app import OutputWindow, LoadingWindow
-from library.helpers.PublicHolidays import PublicHolidays
 from library.custom_errors.InvalidInputError import InvalidInputError
-
-
-@pytest.fixture
-def loading_window():
-    return Mock(spec=LoadingWindow)
-
-
-@pytest.fixture
-def output_window():
-    return Mock(spec=OutputWindow)
-
-
-@pytest.fixture
-def public_holidays():
-    return Mock(spec=PublicHolidays)
-
-
-@pytest.fixture
-def mocker():
-
-    with patch("controllers.datesSequenceController.PublicHolidays") as mock:
-        yield mock
-
-
-@pytest.fixture
-def ui_elements():
-    return UIElementsDatesSequence(
-        btn_generate_dates=Mock(spec=QPushButton),
-        btn_clear_dates=Mock(spec=QPushButton),
-        exclude_bank_holidays=Mock(spec=QCheckBox),
-        exclude_saturdays=Mock(spec=QCheckBox),
-        exclude_sundays=Mock(spec=QCheckBox),
-        sequence_name=Mock(spec=QLineEdit),
-        l_bound=Mock(spec=QDateEdit),
-        u_bound=Mock(spec=QDateEdit),
-        label_lbound=Mock(spec=QLabel),
-        label_ubound=Mock(spec=QLabel),
-        exclude_dates=Mock(spec=QGroupBox),
-        n_groups=Mock(spec=QSpinBox),
-        label_n_groups=Mock(spec=QLabel),
-        n_elements=Mock(spec=QSpinBox),
-        label_n_elements=Mock(spec=QLabel),
-        original_order=Mock(spec=QRadioButton),
-        ascending_order=Mock(spec=QRadioButton),
-        descending_order=Mock(spec=QRadioButton),
-    )
 
 
 def test_clear_fields(ui_elements):

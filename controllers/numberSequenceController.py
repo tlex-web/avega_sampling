@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEd
 from typing import NamedTuple
 
 from controllers.baseSequenceController import BaseSequenceController
-from models.Generators import RandomNumberSequenceGenerator
+from models.RandomNumberSequenceGenerator import RandomNumberSequenceGenerator
 from library.custom_errors.InvalidInputError import InvalidInputError
 from models.Seed import Seed
 from models.User import User

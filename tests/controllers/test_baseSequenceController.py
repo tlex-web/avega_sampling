@@ -1,28 +1,12 @@
 import pytest
-from unittest.mock import Mock
+
+from fixtures import base_sequence_controller, generator, mocker
 
 from models.Seed import Seed
 from models.User import User
 from config import SESSION_NAME
 from controllers.baseSequenceController import BaseSequenceController
 from controllers.numberSequenceController import NumberSequenceController
-
-
-@pytest.fixture
-def generator():
-    return Mock(spec=NumberSequenceController)
-
-
-@pytest.fixture
-def mocker():
-    return Mock()
-
-
-@pytest.fixture
-def base_sequence_controller(mocker):
-    mocker.patch.object(User, "read_user_username", return_value={"user_id": 1})
-    mocker.patch.object(Seed, "read_seed", return_value={"seed_value": 12345})
-    return BaseSequenceController
 
 
 def test_check_session_existing_user(base_sequence_controller, generator, mocker):

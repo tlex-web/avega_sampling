@@ -1,16 +1,7 @@
 import pytest
 from PyQt6.QtSql import QSqlQuery
 
-from db.Database import Database
-
-
-@pytest.fixture
-def setup_database():
-    db = Database(":memory:")
-    db.connect()
-    db.create_tables()
-    yield db
-    db.close()
+from fixtures import setup_database
 
 
 def test_connect(setup_database):

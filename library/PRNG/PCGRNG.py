@@ -7,17 +7,21 @@
 
 
 class PCGRNG:
-    def __init__(self, initstate=0x853C49E6748FEA9B, initseq=0xDA3E39CB94B95BDB):
+
+    def __init__(self, initstate=None, initseq=0xDA3E39CB94B95BDB):
         """PCG Random Number Generator
 
         Args:
-            initstate (hexadecimal, integer, optional): Initial state or given seed value. Defaults to 0x853C49E6748FEA9B.
-            initseq (hexadecimal, optional): Initial sequential value. Defaults to 0xDA3E39CB94B95BDB.
+            initstate (int, optional): Initial state or given seed value. If None, a default seed is used.
+            initseq (int, optional): Initial sequential value. Defaults to 0xDA3E39CB94B95BDB.
         """
         self.state = 0
         self.inc = (initseq << 1) | 1
         self.max = 0xFFFFFFFFFFFFFFFF
-        self.seed(initstate)
+        if initstate is not None:
+            self.seed(initstate)
+        else:
+            self.step()  # Initialize with a step if no seed is provided
 
     def seed(self, seed_value: int):
         """Seed the random number generator
@@ -49,5 +53,5 @@ class PCGRNG:
         Returns:
             int: A random number within the specified range
         """
-        range_size = max_val - min_val + 1
-        return min_val + self.next() % range_size
+        range_size = max_val - min_val
+        return min_val + self.next() % (range_size + 1)

@@ -3,9 +3,7 @@ from PyQt6.QtSql import QSqlQuery
 from models.User import User
 
 
-@pytest.fixture
-def user():
-    return User()
+from fixtures import user, mocker
 
 
 def test_create_user(user, mocker):

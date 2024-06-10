@@ -1,74 +1,8 @@
-from abc import ABC, abstractmethod
 from datetime import date, timedelta
 
-from library.Logger import log, LogEnvironment
-from library.custom_errors.InvalidInputError import InvalidInputError
 from library.PRNG.PCGRNG import PCGRNG
-
-
-class Generator(ABC):
-
-    def __init__(self):
-        self.rng = PCGRNG()
-        self.seed = None
-
-    def set_seed(self, seed: int | None = None):
-        """Set the seed for the random number generator (Optional)
-
-        Args:
-            seed (int): Seed value as integer with a maximum value of 2^32
-        """
-        if seed is None:
-            seed = self.rng.get_random_number(1, 2**32 - 1)
-
-        self.seed = seed
-        self.rng.seed(seed)
-
-    @abstractmethod
-    def generate_and_return_sequence(self):
-        pass
-
-
-class RandomNumberSequenceGenerator(Generator):
-
-    def __init__(self):
-        super().__init__()
-
-        self.rng = PCGRNG()
-        self.seed = None
-
-    def generate_and_return_sequence(self, l_bound: int, u_bound: int, length: int):
-        """Generates a sequence of unique random numbers
-
-        Args:
-            min_val (int): The minimum value of the range (inclusive)
-            max_val (int): The maximum value of the range (inclusive)
-            length (int): The length of the sequence
-
-        Raises:
-            ValueError: If the length of the sequence exceeds the number of unique values in the range
-
-        Returns:
-            list[int]: A list of unique random numbers within the specified range
-        """
-
-        try:
-            generated_numbers = set()
-
-            while len(generated_numbers) != length:
-                random_number = self.rng.get_random_number(l_bound, u_bound)
-                generated_numbers.add(random_number)
-
-            return list(generated_numbers)
-
-        except Exception as e:
-            log.error(
-                f"Error generating random number sequence: {e}",
-                LogEnvironment.GENERATORS,
-            )
-            raise InvalidInputError(
-                "Invalid input values for number sequence generation"
-            )
+from library.Generator import Generator
+from library.custom_errors.InvalidInputError import InvalidInputError
 
 
 class RandomDatesSequenceGenerator(Generator):
@@ -120,12 +54,18 @@ class RandomDatesSequenceGenerator(Generator):
         """
 
         total_days = (u_bound - l_bound).days + 1
+
         if exclude_saturdays:
+            # Subtract the number of Saturdays that fall within the range
             total_days -= ((u_bound - l_bound).days // 7) + 1
         if exclude_sundays:
+            # Subtract the number of Sundays that fall within the range
             total_days -= ((u_bound - l_bound).days // 7) + 1
         if holidays:
-            total_days -= len(set(holidays) & set(range((u_bound - l_bound).days + 1)))
+            # Subtract the number of holidays that fall within the range
+            total_days -= len(
+                [holiday for holiday in holidays if l_bound <= holiday <= u_bound]
+            )
 
         if length > total_days:
             raise InvalidInputError(
@@ -145,6 +85,6 @@ class RandomDatesSequenceGenerator(Generator):
             if random_date in holidays_set:
                 continue
 
-            generated_dates.add(random_date.isoformat())
+            generated_dates.add(random_date)
 
         return list(generated_dates)

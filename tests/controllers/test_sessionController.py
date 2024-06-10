@@ -1,19 +1,6 @@
-import os
 import pytest
-from unittest.mock import MagicMock
-from controllers.sessionController import SessionController
-from models.User import User
-from library.Logger import Logger, LogEnvironment
 
-# save the local machine name
-hostname = os.getenv("COMPUTERNAME")
-
-
-@pytest.fixture
-def session_controller():
-    session_controller = SessionController()
-    session_controller.model = MagicMock(User)
-    return session_controller
+from fixtures import hostname, session_controller
 
 
 def test_init_session_new_session(session_controller):

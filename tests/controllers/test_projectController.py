@@ -1,16 +1,7 @@
 import pytest
 from unittest.mock import Mock
-from controllers.projectController import ProjectController
 
-
-@pytest.fixture
-def output_window():
-    return Mock()
-
-
-@pytest.fixture
-def project_controller(output_window):
-    return ProjectController("Client", 2022, output_window)
+from fixtures import output_window, project_controller
 
 
 def test_add_project(project_controller):

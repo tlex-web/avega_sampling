@@ -1,11 +1,9 @@
 import pytest
 from unittest.mock import MagicMock
-from library.Logger import Logger, LogEnvironment
+from library.Logger import LogEnvironment
 
 
-@pytest.fixture
-def logger():
-    return Logger(isDev=True)
+from fixtures import logger
 
 
 def test_log(logger):

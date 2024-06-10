@@ -1,28 +1,6 @@
 import pytest
-from unittest.mock import MagicMock
-from PyQt6.QtWidgets import QPushButton
-from controllers.windowController import WindowController
 
-
-@pytest.fixture
-def window_controller():
-    btn_new_file = MagicMock(spec=QPushButton)
-    btn_save_as = MagicMock(spec=QPushButton)
-    btn_save = MagicMock(spec=QPushButton)
-    btn_copy = MagicMock(spec=QPushButton)
-    btn_paste = MagicMock(spec=QPushButton)
-    btn_help = MagicMock(spec=QPushButton)
-    help_window = MagicMock()
-
-    return WindowController(
-        btn_new_file,
-        btn_save_as,
-        btn_save,
-        btn_copy,
-        btn_paste,
-        btn_help,
-        help_window,
-    )
+from fixtures import window_controller
 
 
 def test_new_file(window_controller):

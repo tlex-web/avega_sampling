@@ -1,20 +1,7 @@
 import pytest
 from PyQt6.QtWidgets import QTextEdit
-from app import OutputWindow
-from library.helpers.printOutput import PrintOutput
 
-
-@pytest.fixture
-def output_window():
-    return OutputWindow()
-
-
-@pytest.fixture
-def print_output(output_window):
-    company_name = "Sample Company"
-    company_year = "2022"
-    output = ["Output 1", "Output 2", "Output 3"]
-    return PrintOutput(output_window, company_name, company_year, output)
+from fixtures import output_window, print_output
 
 
 def test_output_to_html(print_output):

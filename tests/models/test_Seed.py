@@ -3,9 +3,7 @@ from PyQt6.QtSql import QSqlQuery
 from models.Seed import Seed
 
 
-@pytest.fixture
-def seed():
-    return Seed()
+from fixtures import seed, mocker
 
 
 def test_create_seed(seed, mocker):

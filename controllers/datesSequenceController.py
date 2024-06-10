@@ -14,7 +14,7 @@ from typing import NamedTuple
 
 from controllers.baseSequenceController import BaseSequenceController
 
-from models.Generators import RandomDatesSequenceGenerator
+from models.RandomDatesSequenceGenerator import RandomDatesSequenceGenerator
 from library.helpers.PublicHolidays import PublicHolidays
 from library.custom_errors.InvalidInputError import InvalidInputError
 
