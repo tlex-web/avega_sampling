@@ -74,7 +74,6 @@ def test_return_list_public_holidays(public_holidays):
 
 def test_returned_dates_valid_iso_format(public_holidays):
 
-    public_holidays = PublicHolidays()
     public_holidays.set_period(2022, 2023)
     holidays = public_holidays.return_list_public_holidays()
     for holiday in holidays if holidays is not None else []:

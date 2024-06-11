@@ -88,18 +88,6 @@ def generator():
 
 
 @pytest.fixture
-def mocker():
-    return Mock()
-
-
-@pytest.fixture
-def base_sequence_controller(mocker):
-    mocker.patch.object(User, "read_user_username", return_value={"user_id": 1})
-    mocker.patch.object(Seed, "read_seed", return_value={"seed_value": 12345})
-    return BaseSequenceController
-
-
-@pytest.fixture
 def loading_window():
     return Mock(spec=LoadingWindow)
 
@@ -111,7 +99,7 @@ def output_window():
 
 @pytest.fixture
 def public_holidays():
-    return Mock(spec=PublicHolidays)
+    return PublicHolidays()
 
 
 @pytest.fixture

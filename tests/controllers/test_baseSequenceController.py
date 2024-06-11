@@ -1,22 +1,27 @@
 import pytest
-
-from fixtures import base_sequence_controller, generator, mocker
+import pytest_mock
 
 from models.Seed import Seed
 from models.User import User
 from config import SESSION_NAME
-from controllers.baseSequenceController import BaseSequenceController
-from controllers.numberSequenceController import NumberSequenceController
 
 
-def test_check_session_existing_user(base_sequence_controller, generator, mocker):
-    mocker.patch.object(generator, "set_seed")
+mocker = pytest_mock.mocker
 
-    generator.check_session()
+
+def test_check_session_existing_user(mocker):
+    mocker.patch.object(User, "read_user_username", return_value="test_user")
+    mocker.patch.object(Seed, "read_seed", return_value="12345")
+    mocker.patch.object(Seed, "create_seed")
+
+    base_sequence_controller = mocker.MagicMock()
+    base_sequence_controller.generator = mocker.MagicMock()
+
+    base_sequence_controller.check_session()
 
     base_sequence_controller.read_user_username.assert_called_once_with(SESSION_NAME)
-    base_sequence_controller.read_seed.assert_called_once_with(1)
-    generator.set_seed.assert_called_once_with(12345)
+    base_sequence_controller.create_seed.assert_called_once_with("12345")
+    base_sequence_controller.generator.set_seed.assert_called_once_with("12345")
 
 
 def test_check_session_new_user(base_sequence_controller, mocker):

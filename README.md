@@ -15,7 +15,7 @@ The application was developed to be used in a Windows environment.
 The Frontend was developed using the PySide6 Designer to quickly design the components of the UI. To open the Designer, the following command was used:
 
 ```bash
-pyside6-designer
+pyqt6-tools designer
 ``` 
 
 In order to export the UI files of the different components to a Python file, the following command was used:
@@ -35,7 +35,6 @@ Note: The resource file needs to be in the same directory as the app.py file in 
 ## Requirements
 1. Python 3.11.8
 2. PyQt6 6.2.2
-3. PySide6 6.2.2
 4. requests 2.26.0
 5. PyInstaller 4.2
 

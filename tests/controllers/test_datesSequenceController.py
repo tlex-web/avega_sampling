@@ -4,6 +4,12 @@ from PyQt6.QtWidgets import QProgressBar
 from datetime import date
 from unittest.mock import create_autospec
 
+from fixtures import (
+    ui_elements_dates as ui_elements,
+    public_holidays,
+    output_window,
+    loading_window,
+)
 
 from controllers.datesSequenceController import (
     DatesSequenceController,

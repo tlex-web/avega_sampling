@@ -1,13 +1,16 @@
-import pytest
+import pytest_mock
 from PyQt6.QtSql import QSqlQuery
-from models.Seed import Seed
 
 
-from fixtures import seed, mocker
+from fixtures import seed
+
+mocker = pytest_mock.mocker
 
 
 def test_create_seed(seed, mocker):
-    mocker.patch.object(QSqlQuery, "exec", return_value=True)
+    mock_prepare = mocker.patch.object(QSqlQuery, "prepare")
+    mock_exec = mocker.patch.object(QSqlQuery, "exec", return_value=True)
+    mock_bindValue = mocker.patch.object(QSqlQuery, "addBindValue")
 
     seed_value = 12345
     user_id = 1
@@ -15,7 +18,13 @@ def test_create_seed(seed, mocker):
     result = seed.create_seed(seed_value, user_id)
 
     assert result is True
-    QSqlQuery.exec.assert_called_once_with()
+    mock_prepare.assert_called_once_with(
+        "INSERT INTO seeds (seed_value, user_id) VALUES (?, ?)"
+    )
+
+    mock_bindValue.assert_any_call(seed_value)
+    mock_bindValue.assert_any_call(user_id)
+    mock_exec.assert_called_once()
 
 
 def test_read_seed_existing(seed, mocker):

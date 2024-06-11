@@ -1,6 +1,4 @@
 import pytest
-from unittest.mock import MagicMock
-from models.RandomNumberSequenceGenerator import RandomNumberSequenceGenerator
 
 from fixtures import rng_generator
 

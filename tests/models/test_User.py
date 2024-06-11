@@ -1,9 +1,10 @@
-import pytest
+import pytest_mock
 from PyQt6.QtSql import QSqlQuery
-from models.User import User
 
 
-from fixtures import user, mocker
+from fixtures import user
+
+mocker = pytest_mock.mocker
 
 
 def test_create_user(user, mocker):

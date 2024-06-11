@@ -1,5 +1,5 @@
 import pytest
-from datetime import date, timedelta
+from datetime import date
 from models.RandomDatesSequenceGenerator import RandomDatesSequenceGenerator
 
 
