@@ -778,6 +778,9 @@
     </property>
    </widget>
    <widget class="QFrame" name="legend_wrapper">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -807,6 +810,9 @@
      <layout class="QHBoxLayout" name="legend">
       <item>
        <widget class="QPushButton" name="pushButton_new_file">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>new file</string>
         </property>
@@ -830,6 +836,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_save_as">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>save as</string>
         </property>
@@ -844,6 +853,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_save">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>save</string>
         </property>
@@ -1073,7 +1085,7 @@
   </widget>
   <action name="actionAbout">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>About</string>
@@ -1081,7 +1093,7 @@
   </action>
   <action name="actionHow_to">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>How to</string>
@@ -1113,7 +1125,7 @@
   </action>
   <action name="actionSave">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Save</string>
@@ -1121,7 +1133,7 @@
   </action>
   <action name="actionSave_as">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Save as</string>

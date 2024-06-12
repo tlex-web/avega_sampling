@@ -1,6 +1,7 @@
 import sys
 from PyQt6 import QtWidgets
 
+
 from view.MainWindow import Ui_MainWindow
 from view.OutputWindow import Ui_MainWindow as Ui_OutputWindow
 from view.SeedWindow import Ui_Form as Ui_SeedWindow
@@ -10,6 +11,7 @@ from view.AboutWindow import Ui_Form as Ui_AboutWindow
 
 from controllers.seedController import SeedController
 from controllers.sessionController import SessionController
+from controllers.outputController import OutputWindowController
 from controllers.numberSequenceController import NumberSequenceController
 from controllers.datesSequenceController import DatesSequenceController
 from controllers.windowController import WindowController
@@ -17,6 +19,7 @@ from controllers.menuController import MenuController
 from controllers.numberSequenceController import UIElementsNumberSequence
 from controllers.datesSequenceController import UIElementsDatesSequence
 
+from library.helpers.printOutput import PrintOutputSignals
 
 from db.Database import Database
 from config import DB_FILENAME
@@ -94,6 +97,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.about_window = AboutWindow()
 
         # connect the signals and slots to handle events on the UI
+        self.signals = PrintOutputSignals()
 
         # Window signals
         self.window_controller = WindowController(
@@ -116,11 +120,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.help_window,
         )
 
-        # User tab signals
-        # self.user_controller = UserController(self)
-
-        # Project tab signals
-        # self.project_controller = ProjectController(self)
+        # Output Window signals
+        self.output_controller = OutputWindowController(
+            self.output_window, self.signals
+        )
 
         # Number Sequence tab signals
         self.number_sequence_controller = NumberSequenceController(
@@ -141,7 +144,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 ascending_order=self.radiobutton_asc_numbers,
                 descending_order=self.radiobutton_desc_numbers,
             ),
-            output_window=self.output_window,
         )
 
         # Dates Sequence tab signals

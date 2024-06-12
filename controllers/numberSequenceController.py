@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEd
 from typing import NamedTuple
 
 from controllers.baseSequenceController import BaseSequenceController
+from library.helpers.printOutput import PrintOutput, Output
 from models.RandomNumberSequenceGenerator import RandomNumberSequenceGenerator
 from library.custom_errors.InvalidInputError import InvalidInputError
 from models.Seed import Seed
@@ -31,7 +32,6 @@ class NumberSequenceController(BaseSequenceController):
     def __init__(
         self,
         ui_elements: UIElementsNumberSequence,
-        output_window,
     ) -> None:
         """
         Initializes the number sequence controller.
@@ -39,7 +39,7 @@ class NumberSequenceController(BaseSequenceController):
         super().__init__(RandomNumberSequenceGenerator())
 
         self.ui_elements = ui_elements
-        self.output_window = output_window
+        self.print_output = PrintOutput()
         self.seed_model = Seed()
         self.user_model = User()
         self.rng = RandomNumberSequenceGenerator()
@@ -214,23 +214,23 @@ class NumberSequenceController(BaseSequenceController):
     def handle_generate_sequence_btn(self):
 
         try:
-            # Generate the random numbers
             number_sequence = self.generate_sequence()
 
-            # Group the numbers based on the user's preference
             number_output = self.group_sequence(number_sequence)
 
-            # print the number_sequence
-            self.output_window.output_element.clear()
-            self.output_window.output_element.append(
-                self.ui_elements.sequence_name.text()
+            self.print_output.set_output(
+                Output(
+                    lower_bound=self.ui_elements.l_bound.value(),
+                    upper_bound=self.ui_elements.u_bound.value(),
+                    optional_params={},
+                    n_groups=self.ui_elements.n_groups.value(),
+                    n_elements=self.ui_elements.n_elements.value(),
+                    seed=self.rng.rng.state,
+                    output=number_output,
+                )
             )
-            self.output_window.output_element.append("")
 
-            for group, numbers in number_output.items():
-                self.output_window.output_element.append(f"{group}: {numbers}")
-
-            self.output_window.show()
+            self.print_output.output_to_template_str()
 
         except InvalidInputError as e:
             self.update_ui_for_errors(e)

@@ -196,14 +196,6 @@ def window_controller():
 
 
 @pytest.fixture
-def print_output(output_window):
-    company_name = "Sample Company"
-    company_year = "2022"
-    output = ["Output 1", "Output 2", "Output 3"]
-    return PrintOutput(output_window, company_name, company_year, output)
-
-
-@pytest.fixture
 def logger():
     return Logger(isDev=True)
 

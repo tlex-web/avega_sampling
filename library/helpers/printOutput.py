@@ -1,79 +1,75 @@
-from PyQt6.QtWidgets import QTextEdit
-from app import OutputWindow
+from typing import NamedTuple
+from PyQt6.QtCore import QObject, pyqtSignal
+from string import Template
+
+from library.Logger import log, LogEnvironment
+
+
+class Output(NamedTuple):
+    lower_bound: float
+    upper_bound: float
+    optional_params: dict
+    n_groups: int
+    n_elements: int
+    seed: int
+    output: dict
+
+
+class PrintOutputSignals(QObject):
+    send_output = pyqtSignal(str)
 
 
 class PrintOutput:
     def __init__(
         self,
-        output_window: OutputWindow,
-        company_name: str,
-        company_year: str,
-        output,
     ) -> None:
-        self.output_window = output_window
-        self.company_name = company_name
-        self.company_year = company_year
-        self.output = output
+        self.signals = PrintOutputSignals()
+        self.output = None
 
-    def output_to_html(self) -> str:
+    def set_output(self, output: Output) -> None:
+        """Set the output to be printed.
+
+        Args:
+            output (Output): The output to be printed.
+        """
+
+        if isinstance(output, Output):
+            self.output = output
+        else:
+            log.error(
+                "The output must be an instance of the Output class.",
+                LogEnvironment.UTILS,
+            )
+            raise TypeError("The output must be an instance of the Output class.")
+
+    def output_to_template_str(self):
         """Generate a HTML report based on the generated output.
 
         Returns:
             str: A string containing the generated HTML report.
         """
-        for i, group in enumerate(self.output):
-            self.output_window.output_element.append(f"Group {i+1}:")
-            self.output_window.output_element.append(str(group))
-            self.output_window.output_element.append("")
-        return f"""
-        <html>
-        <head>
-        <style>
-        table {{
-            font-family: arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-        }}
 
-        td, th {{
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }}
+        try:
+            with open("view/templates/output_window.html", "r") as file:
+                template = Template(file.read())
 
-        tr:nth-child(even) {{
-            background-color: #dddddd;
-        }}
+            if self.output:
+                output = template.substitute(
+                    {
+                        "l_bound": self.output.lower_bound,
+                        "u_bound": self.output.upper_bound,
+                        "optional_params": self.output.optional_params,
+                        "n_groups": self.output.n_groups,
+                        "n_elements": self.output.n_elements,
+                        "seed": self.output.seed,
+                        "output": self.output.output,
+                    }
+                )
 
-        h1 {{
-            text-align: center;
-        }}
-        </style>
-        </head>
-        <body>
-        <h1>{self.company_name} - {self.company_year}</h1>
-        <table>
-            <tr>
-                <th>Output</th>
-            </tr>
-            <tr>
-                <td>{self.output}</td>
-            </tr>
-        </table>
-        </body>
-        </html>
-        """
+                print("output", output, "state", self.signals.send_output.signal)
+                self.signals.send_output.emit(output)
+                print("emit", self.signals.send_output.signal)
 
-    def print_output(self) -> QTextEdit:
-        """Generate a HTML report based on the generated output.
-
-        Returns:
-            QTextEdit: A QTextEdit widget containing the generated HTML report.
-        """
-
-        output = self.output_to_html()
-
-        self.output_window.output_element.clear()
-        self.output_window.output_element.setHtml(output)
-
-        return self.output_window.output_element
+        except FileNotFoundError:
+            log.error("The output template file was not found.", LogEnvironment.UTILS)
+            raise FileNotFoundError("The output template file was not found.")
