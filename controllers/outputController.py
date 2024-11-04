@@ -1,15 +1,26 @@
 from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QPushButton
+
+# from app import OutputWindow
+from library.helpers.printOutput import PrintOutput
 
 
 class OutputWindowController:
-    def __init__(self, output_window, signals) -> None:
+    def __init__(
+        self,
+        output_window,
+        btn_generate_numbers: QPushButton,
+        btn_generate_dates: QPushButton,
+        output: PrintOutput,
+    ) -> None:
         self.output_window = output_window
-        self.signals = signals
-        self.current_dto = None
+        self.btn_generate_numbers = btn_generate_numbers
+        self.btn_generate_dates = btn_generate_dates
+        self.output = output
 
+        self.btn_generate_numbers.clicked.connect(self.output_window.show)
+        self.btn_generate_dates.clicked.connect(self.output_window.show)
         self.output_window.pushButton_save_as_output.clicked.connect(self.save_output)
-        self.signals.send_output.connect(self.show_output)
-        print("connect", self.signals.send_output.signal)
 
     def show_output(self, dto) -> None:
         """Show the output in the output window.
@@ -17,14 +28,11 @@ class OutputWindowController:
         Args:
             output (Output): The output to be displayed.
         """
-        self.current_dto = dto
-        print("show_output", dto)
-
-        if not self.output_window.isVisible():
+        if dto:
+            print("output ", dto)
+            self.current_dto = dto
+            self.output_window.textEdit_output.setHtml(dto)
             self.output_window.show()
-            self.output_window.output_element.setHtml(dto)
-        else:
-            self.output_window.output_element.setHtml(dto)
 
     def save_output(self) -> None:
         """Save the output to a file.

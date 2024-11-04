@@ -22,7 +22,7 @@ class Seed:
 
         return query.exec()
 
-    def read_seed(self, user_id: int) -> dict | None:
+    def read_seed(self, user_id: int) -> dict[str, str] | None:
         """Get a seed from the database.
 
         Args:

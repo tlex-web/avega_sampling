@@ -1,5 +1,4 @@
 from typing import NamedTuple
-from PyQt6.QtCore import QObject, pyqtSignal
 from string import Template
 
 from library.Logger import log, LogEnvironment
@@ -15,15 +14,11 @@ class Output(NamedTuple):
     output: dict
 
 
-class PrintOutputSignals(QObject):
-    send_output = pyqtSignal(str)
-
-
 class PrintOutput:
+
     def __init__(
         self,
     ) -> None:
-        self.signals = PrintOutputSignals()
         self.output = None
 
     def set_output(self, output: Output) -> None:
@@ -56,7 +51,7 @@ class PrintOutput:
             if self.output:
                 output = template.substitute(
                     {
-                        "l_bound": self.output.lower_bound,
+                        "%l_bound%": self.output.lower_bound,
                         "u_bound": self.output.upper_bound,
                         "optional_params": self.output.optional_params,
                         "n_groups": self.output.n_groups,
@@ -66,9 +61,7 @@ class PrintOutput:
                     }
                 )
 
-                print("output", output, "state", self.signals.send_output.signal)
-                self.signals.send_output.emit(output)
-                print("emit", self.signals.send_output.signal)
+                return output
 
         except FileNotFoundError:
             log.error("The output template file was not found.", LogEnvironment.UTILS)

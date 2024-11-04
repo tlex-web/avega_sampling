@@ -1,3 +1,4 @@
+from models.Session import Session
 from models.User import User
 from library.Logger import log, LogEnvironment
 from config import SESSION_NAME
@@ -17,32 +18,43 @@ class SessionController:
         """
         Initializes the session controller.
         """
-        self.model = User()
+        self.user_model = User()
+        self.session_model = Session()
 
     def init_session(self):
         """
         Initializes a new session for a user.
-
-        Returns:
-            int: A random user id
         """
 
-        # find session, if it exists
-        user_id = self.model.read_user_username(SESSION_NAME)
+        user_data = self.user_model.read_user_username(SESSION_NAME)
 
-        if user_id is None:
-            user_id = self.model.create_user(SESSION_NAME)
+        if user_data is not None:
+            user_id = user_data["user_id"]
 
-            if user_id is None:
-                log.error("Failed to start user session", LogEnvironment.CONTROLLERS)
-                raise Exception("Failed to start user session")
+            # check if session exists
+            session = self.session_model.get_session(user_id)
+
+            if session is None:
+                self.session_model.create_session(user_id)
+
+                log.info(
+                    f"Created session for user {user_id}", LogEnvironment.CONTROLLERS
+                )
+
             else:
                 log.info(
-                    f"Started user session with id: {user_id}",
-                    LogEnvironment.CONTROLLERS,
+                    f"Continue session for user {user_id}", LogEnvironment.CONTROLLERS
                 )
+
         else:
-            log.info(
-                f"Continuing user session with id: {user_id['user_id']}",
-                LogEnvironment.CONTROLLERS,
-            )
+            user_id = self.user_model.create_user(SESSION_NAME)
+
+            if user_id is not None:
+                self.session_model.create_session(user_id)
+
+                log.info(
+                    f"Created session for user {user_id}", LogEnvironment.CONTROLLERS
+                )
+            else:
+                log.error("Failed to create user session", LogEnvironment.CONTROLLERS)
+                raise Exception("Failed to create user session")

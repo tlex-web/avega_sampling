@@ -25,6 +25,7 @@ from models.User import User
 class UIElementsDatesSequence(NamedTuple):
     btn_generate_dates: QPushButton
     btn_clear_dates: QPushButton
+    btn_seed_dates: QPushButton
     exclude_bank_holidays: QCheckBox
     exclude_saturdays: QCheckBox
     exclude_sundays: QCheckBox
@@ -64,6 +65,7 @@ class DatesSequenceController(BaseSequenceController):
         self.public_holidays = PublicHolidays()
         self.rdg = RandomDatesSequenceGenerator()
         self.list_public_holidays = None
+        self.seed = None
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
@@ -249,8 +251,9 @@ class DatesSequenceController(BaseSequenceController):
 
         self.check_input_fields()
 
-        # Set the seed for the random date generator
-        self.check_session()
+        # Check if the user has an active session and set the seed
+        if self.seed is None:
+            self.ui_elements.btn_seed_dates.click()
 
         date_sequence = self.rdg.generate_and_return_sequence(
             self.ui_elements.l_bound.date().toPyDate(),

@@ -6,7 +6,7 @@ from library.Logger import log, LogEnvironment
 class User:
     """Represents a user in the system."""
 
-    def create_user(self, username: str):
+    def create_user(self, username: str) -> int | None:
         """Create a new user in the database
 
         Args:

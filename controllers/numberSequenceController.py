@@ -7,6 +7,7 @@ from models.RandomNumberSequenceGenerator import RandomNumberSequenceGenerator
 from library.custom_errors.InvalidInputError import InvalidInputError
 from models.Seed import Seed
 from models.User import User
+from models.Projects import Project
 
 
 class UIElementsNumberSequence(NamedTuple):
@@ -40,12 +41,15 @@ class NumberSequenceController(BaseSequenceController):
 
         self.ui_elements = ui_elements
         self.print_output = PrintOutput()
-        self.seed_model = Seed()
         self.user_model = User()
+        self.seed_model = Seed()
+        self.project_model = Project()
         self.rng = RandomNumberSequenceGenerator()
+        self.seed = None
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
+        # self.ui_elements.btn_seed_numbers.clicked.connect(self.set_seed)
         self.ui_elements.btn_generate_numbers.clicked.connect(
             self.handle_generate_sequence_btn
         )
@@ -76,11 +80,15 @@ class NumberSequenceController(BaseSequenceController):
         self.ui_elements.descending_order.setChecked(False)
 
         # Reset the stylesheets and tooltips for the input fields
-        self.ui_elements.sequence_name.setStyleSheet("color: black; border: none;")
-        self.ui_elements.l_bound.setStyleSheet("color: black; border: none;")
-        self.ui_elements.u_bound.setStyleSheet("color: black; border: none;")
-        self.ui_elements.n_groups.setStyleSheet("color: black; border: none;")
-        self.ui_elements.n_elements.setStyleSheet("color: black; border: none;")
+        self.ui_elements.sequence_name.setStyleSheet(
+            "color: black; border: #fff 1px solid;"
+        )
+        self.ui_elements.l_bound.setStyleSheet("color: black; border: #fff 1px solid;")
+        self.ui_elements.u_bound.setStyleSheet("color: black; border: #fff 1px solid;")
+        self.ui_elements.n_groups.setStyleSheet("color: black; border: #fff 1px solid;")
+        self.ui_elements.n_elements.setStyleSheet(
+            "color: black; border: #fff 1px solid;"
+        )
         self.ui_elements.sequence_name.setToolTip("")
         self.ui_elements.l_bound.setToolTip("")
         self.ui_elements.u_bound.setToolTip("")
@@ -176,7 +184,8 @@ class NumberSequenceController(BaseSequenceController):
         self.check_input_fields()
 
         # Check if the user has an active session and set the seed
-        self.check_session()
+        if self.seed is None:
+            self.ui_elements.btn_seed_numbers.click()
 
         # Generate the random numbers
         number_sequence = self.rng.generate_and_return_sequence(
@@ -211,9 +220,29 @@ class NumberSequenceController(BaseSequenceController):
 
         return number_output
 
+    def set_seed(self):
+        """
+        Sets the seed for the random number generator.
+        """
+
+        # Get the user's session data
+        session = self.read_session()
+
+        # Set the seed for the random number generator
+        if session is not None:
+            self.seed = self.seed_model.read_seed(int(session["user_id"]))
+
+            if self.seed is not None:
+                self.rng.set_seed(int(self.seed["seed_value"]))
+        else:
+            self.seed = self.rng.set_seed()
+            self.rng.set_seed(self.seed)
+
     def handle_generate_sequence_btn(self):
 
         try:
+            self.set_seed()
+
             number_sequence = self.generate_sequence()
 
             number_output = self.group_sequence(number_sequence)
@@ -230,7 +259,19 @@ class NumberSequenceController(BaseSequenceController):
                 )
             )
 
-            self.print_output.output_to_template_str()
+            session = self.read_session()
+
+            if session is not None:
+                self.project_model.create_project(
+                    self.ui_elements.sequence_name.text(),
+                    int(session["user_id"]),
+                    self.rng.rng.state,
+                    self.ui_elements.l_bound.value(),
+                    self.ui_elements.u_bound.value(),
+                    self.ui_elements.n_elements.value(),
+                    self.ui_elements.n_groups.value(),
+                    str(number_output),
+                )
 
         except InvalidInputError as e:
             self.update_ui_for_errors(e)

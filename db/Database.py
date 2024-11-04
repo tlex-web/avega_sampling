@@ -5,6 +5,20 @@ from library.Logger import log, LogEnvironment
 from config import DB_TYPE
 
 
+def read_sql_file(file_path: str) -> str:
+    """Read SQL file and return the content as a string
+
+    Args:
+        file_path (str): Path to the SQL file
+
+    Returns:
+        str: Content of the SQL file
+    """
+
+    with open(file_path, "r") as file:
+        return file.read()
+
+
 class Database:
     def __init__(self, db_file=None):
         """Database class for SQLite3
@@ -45,34 +59,20 @@ class Database:
     def create_tables(self):
         """Create user, seed and project table in the database"""
 
-        query = QSqlQuery()
-        if query.exec(
-            """CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(username) ON CONFLICT FAIL)"""
-        ):
-            log.info("Created table: users", LogEnvironment.DATABASE)
-        else:
-            log.error(
-                f"Failed to create table: users {query.lastError().text()}",
-                LogEnvironment.DATABASE,
-            )
-        if query.exec(
-            """CREATE TABLE IF NOT EXISTS projects (project_id INTEGER PRIMARY KEY AUTOINCREMENT, project_name TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY(user_id) REFERENCES users(id))"""
-        ):
-            log.info("Created table: projects", LogEnvironment.DATABASE)
-        else:
-            log.error(
-                f"Failed to create table: projects {query.lastError().text()}",
-                LogEnvironment.DATABASE,
-            )
-        if query.exec(
-            """CREATE TABLE IF NOT EXISTS seeds (seed_id INTEGER PRIMARY KEY AUTOINCREMENT, seed_value INTEGER NOT NULL, user_id INTEGER NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(user_id) REFERENCES users(id))"""
-        ):
-            log.info("Created table: seeds", LogEnvironment.DATABASE)
-        else:
-            log.error(
-                f"Failed to create table: seeds {query.lastError().text()}",
-                LogEnvironment.DATABASE,
-            )
+        sql_database_schema = read_sql_file("db/schema.sql")
+        queries = sql_database_schema.split(";")
+
+        for query_text in queries:
+            query_text = query_text.strip()
+            if query_text:
+                query = QSqlQuery()
+                if query.exec(query_text):
+                    log.info(f"Executed query: {query_text}", LogEnvironment.DATABASE)
+                else:
+                    log.error(
+                        f"Failed to execute query: {query_text} {query.lastError().text()}",
+                        LogEnvironment.DATABASE,
+                    )
 
     def drop_table(self, table_name: str):
         """Drop a table from the database

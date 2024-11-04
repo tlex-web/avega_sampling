@@ -6,21 +6,45 @@ class Project:
     Represents a project in the database.
     """
 
-    def create_project(self, name: str, user_id: int) -> bool:
+    def create_project(
+        self,
+        project_name: str,
+        user_id: int,
+        seed: int,
+        lower_bound: int,
+        upper_bound: int,
+        n: int,
+        n_groups: int,
+        generated_sequence: str,
+    ) -> bool:
         """Create a new project in the database
 
         Args:
-            name (str): Name of the project
+            project_name (str): Project name
             user_id (int): User id
+            seed (int): Seed value
+            lower_bound (int): Lower bound
+            upper_bound (int): Upper bound
+            n (int): Number of elements
+            n_groups (int): Number of groups
+            generated_sequence (str): Generated sequence
 
         Returns:
             bool: True if the project is created successfully, False otherwise.
         """
 
         query = QSqlQuery()
-        query.prepare("INSERT INTO projects (project_name, user_id) VALUES (?, ?)")
-        query.addBindValue(name)
+        query.prepare(
+            "INSERT INTO projects (project_name, user_id, seed, lower_bound, upper_bound, n, n_groups, generated_sequence) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        )
+        query.addBindValue(project_name)
         query.addBindValue(user_id)
+        query.addBindValue(seed)
+        query.addBindValue(lower_bound)
+        query.addBindValue(upper_bound)
+        query.addBindValue(n)
+        query.addBindValue(n_groups)
+        query.addBindValue(generated_sequence)
 
         return query.exec()
 

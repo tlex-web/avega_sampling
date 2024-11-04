@@ -18,8 +18,7 @@ from controllers.windowController import WindowController
 from controllers.menuController import MenuController
 from controllers.numberSequenceController import UIElementsNumberSequence
 from controllers.datesSequenceController import UIElementsDatesSequence
-
-from library.helpers.printOutput import PrintOutputSignals
+from library.helpers.printOutput import PrintOutput
 
 from db.Database import Database
 from config import DB_FILENAME
@@ -31,8 +30,12 @@ db = Database(DB_FILENAME)
 db.connect()
 db.create_tables()
 
-# create user session
-SessionController().init_session()
+# create user session and exit if no session is found
+try:
+    session_controller = SessionController()
+    session_controller.init_session()
+except Exception as e:
+    exit(1)
 
 
 class OutputWindow(QtWidgets.QMainWindow, Ui_OutputWindow):
@@ -97,7 +100,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.about_window = AboutWindow()
 
         # connect the signals and slots to handle events on the UI
-        self.signals = PrintOutputSignals()
+        self.signals = PrintOutput()
 
         # Window signals
         self.window_controller = WindowController(
@@ -122,7 +125,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Output Window signals
         self.output_controller = OutputWindowController(
-            self.output_window, self.signals
+            self.output_window,
+            self.btn_generate_numbers,
+            self.btn_generate_dates,
+            self.signals,
         )
 
         # Number Sequence tab signals
@@ -151,6 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             ui_elements=UIElementsDatesSequence(
                 btn_generate_dates=self.btn_generate_dates,
                 btn_clear_dates=self.btn_clear_dates,
+                btn_seed_dates=self.btn_seed_dates,
                 exclude_bank_holidays=self.exclude_bank_holidays,
                 exclude_saturdays=self.exclude_saturdays,
                 exclude_sundays=self.exclude_sundays,
@@ -193,7 +200,10 @@ class App(QtWidgets.QApplication):
         self.window.show()
 
 
+import logging
+
 if __name__ == "__main__":
 
     app = App(sys.argv)
+    logging.basicConfig()
     sys.exit(app.exec())

@@ -27,7 +27,7 @@ class Ui_Form(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
         self.textEdit = QtWidgets.QTextEdit(parent=self.gridLayoutWidget)
-        self.textEdit.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))  # type: ignore
+        self.textEdit.setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
         self.textEdit.setFocusPolicy(QtCore.Qt.FocusPolicy.WheelFocus)
         self.textEdit.setStyleSheet("background: rgba(0,0,0,0);\n" "border: none")
         self.textEdit.setReadOnly(True)
@@ -88,7 +88,8 @@ class Ui_Form(object):
                 '<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\n'
                 '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Author: Tim Lui</p>\n'
                 '<p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\n'
-                '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This application is was made using PyQt6. </p>\n'
+                '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This application is was made using PyQt6 and is licensed under GPL-3.0. </p>\n'
+                '<p align="center" style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><br /></p>\n'
                 '<p align="center" style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">In case of any unintentional behaviour, please contact the applications owner to resolve the isssue.</p></body></html>',
             )
         )
