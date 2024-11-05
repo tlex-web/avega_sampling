@@ -437,7 +437,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.sampling_types.setCurrentIndex(0)
+        self.sampling_types.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         MainWindow.setTabOrder(self.sampling_types, self.sequence_name_numbers)
         MainWindow.setTabOrder(self.sequence_name_numbers, self.pushButton_new_file)
