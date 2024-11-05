@@ -14,7 +14,11 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(778, 529)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/assets/icons/AVEGA-Favicon.ico"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(
+            QtGui.QPixmap(":/assets/icons/AVEGA-Favicon.ico"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -24,61 +28,111 @@ class Ui_MainWindow(object):
         self.legend_output_wrapper.setFrameShape(QtWidgets.QFrame.Shape.Panel)
         self.legend_output_wrapper.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.legend_output_wrapper.setObjectName("legend_output_wrapper")
-        self.horizontalLayoutWidget_8 = QtWidgets.QWidget(parent=self.legend_output_wrapper)
+        self.horizontalLayoutWidget_8 = QtWidgets.QWidget(
+            parent=self.legend_output_wrapper
+        )
         self.horizontalLayoutWidget_8.setGeometry(QtCore.QRect(10, 10, 731, 28))
         self.horizontalLayoutWidget_8.setObjectName("horizontalLayoutWidget_8")
         self.legend_output = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_8)
         self.legend_output.setContentsMargins(0, 0, 0, 0)
         self.legend_output.setObjectName("legend_output")
-        self.pushButton_new_file_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_new_file_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_new_file_output.setEnabled(False)
         self.pushButton_new_file_output.setStyleSheet("")
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/assets/icons/new_file.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(
+            QtGui.QPixmap(":/assets/icons/new_file.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_new_file_output.setIcon(icon1)
         self.pushButton_new_file_output.setAutoDefault(False)
         self.pushButton_new_file_output.setDefault(False)
         self.pushButton_new_file_output.setFlat(False)
         self.pushButton_new_file_output.setObjectName("pushButton_new_file_output")
         self.legend_output.addWidget(self.pushButton_new_file_output)
-        self.pushButton_save_as_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_save_as_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_save_as_output.setText("")
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/assets/icons/folder.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon2.addPixmap(
+            QtGui.QPixmap(":/assets/icons/folder.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_save_as_output.setIcon(icon2)
         self.pushButton_save_as_output.setObjectName("pushButton_save_as_output")
         self.legend_output.addWidget(self.pushButton_save_as_output)
-        self.pushButton_save_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_save_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_save_output.setText("")
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/assets/icons/save.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon3.addPixmap(
+            QtGui.QPixmap(":/assets/icons/save.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_save_output.setIcon(icon3)
         self.pushButton_save_output.setIconSize(QtCore.QSize(16, 16))
         self.pushButton_save_output.setObjectName("pushButton_save_output")
         self.legend_output.addWidget(self.pushButton_save_output)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.legend_output.addItem(spacerItem)
-        self.pushButton_copy_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_copy_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_copy_output.setText("")
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(":/assets/icons/copy.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon4.addPixmap(
+            QtGui.QPixmap(":/assets/icons/copy.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_copy_output.setIcon(icon4)
         self.pushButton_copy_output.setObjectName("pushButton_copy_output")
         self.legend_output.addWidget(self.pushButton_copy_output)
-        self.pushButton_paste_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_paste_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_paste_output.setText("")
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap(":/assets/icons/paste.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon5.addPixmap(
+            QtGui.QPixmap(":/assets/icons/paste.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_paste_output.setIcon(icon5)
         self.pushButton_paste_output.setIconSize(QtCore.QSize(16, 16))
         self.pushButton_paste_output.setObjectName("pushButton_paste_output")
-        self.legend_output.addWidget(self.pushButton_paste_output, 0, QtCore.Qt.AlignmentFlag.AlignHCenter)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        self.legend_output.addWidget(
+            self.pushButton_paste_output, 0, QtCore.Qt.AlignmentFlag.AlignHCenter
+        )
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.legend_output.addItem(spacerItem1)
-        self.pushButton_help_output = QtWidgets.QPushButton(parent=self.horizontalLayoutWidget_8)
+        self.pushButton_help_output = QtWidgets.QPushButton(
+            parent=self.horizontalLayoutWidget_8
+        )
         self.pushButton_help_output.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(":/assets/icons/q_mark.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon6.addPixmap(
+            QtGui.QPixmap(":/assets/icons/q_mark.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_help_output.setIcon(icon6)
         self.pushButton_help_output.setObjectName("pushButton_help_output")
         self.legend_output.addWidget(self.pushButton_help_output)
@@ -123,29 +177,6 @@ class Ui_MainWindow(object):
         self.pushButton_copy_output.setToolTip(_translate("MainWindow", "copy"))
         self.pushButton_paste_output.setToolTip(_translate("MainWindow", "paste"))
         self.pushButton_help_output.setToolTip(_translate("MainWindow", "help"))
-        self.output_element.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'Segoe UI\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:700;\">AVEGA Random </span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:700;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This sample was created for the audit of %company% and the fiscarial year %year%. </p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">During our audit fieldwork on the %date% we performed a %sampling_method%. The sampling batch hasb been created using the following seed: %seed%. <br />Note: The seed value along with the respective parameters for the test can be used to recreate the sampling output. </p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Lower Bound: %l_bound%</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Upper Bound: %u_bound%</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Optional parameters: %optional_params%</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Number of groups: %n_groups</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Number of elements: %n_elements%</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Seed: %seed%</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Output:</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">%output%</p></body></html>"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionSave.setText(_translate("MainWindow", "Save"))
         self.actionSave_as.setText(_translate("MainWindow", "Save as"))

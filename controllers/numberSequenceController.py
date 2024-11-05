@@ -30,16 +30,14 @@ class UIElementsNumberSequence(NamedTuple):
 
 class NumberSequenceController(BaseSequenceController):
 
-    def __init__(
-        self,
-        ui_elements: UIElementsNumberSequence,
-    ) -> None:
+    def __init__(self, ui_elements: UIElementsNumberSequence, event_manager) -> None:
         """
         Initializes the number sequence controller.
         """
         super().__init__(RandomNumberSequenceGenerator())
 
         self.ui_elements = ui_elements
+        self.event_manager = event_manager
         self.print_output = PrintOutput()
         self.user_model = User()
         self.seed_model = Seed()
@@ -49,10 +47,11 @@ class NumberSequenceController(BaseSequenceController):
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
-        # self.ui_elements.btn_seed_numbers.clicked.connect(self.set_seed)
         self.ui_elements.btn_generate_numbers.clicked.connect(
             self.handle_generate_sequence_btn
         )
+        self.event_manager.seed_set.connect(self.on_seed_set)
+        self.waiting_for_seed = False
 
     def clear_fields(self):
         """
@@ -183,18 +182,16 @@ class NumberSequenceController(BaseSequenceController):
         # Check if the input fields are valid
         self.check_input_fields()
 
-        # Check if the user has an active session and set the seed
-        if self.seed is None:
-            self.ui_elements.btn_seed_numbers.click()
-
         # Generate the random numbers
-        number_sequence = self.rng.generate_and_return_sequence(
+        number_sequence_org = self.rng.generate_and_return_sequence(
             self.ui_elements.l_bound.value(),
             self.ui_elements.u_bound.value(),
             self.ui_elements.n_elements.value() * self.ui_elements.n_groups.value(),
         )
 
-        return number_sequence
+        number_sequence_sorted = self.group_sequence(number_sequence_org)
+
+        return number_sequence_sorted
 
     def group_sequence(self, number_sequence):
 
@@ -220,58 +217,51 @@ class NumberSequenceController(BaseSequenceController):
 
         return number_output
 
-    def set_seed(self):
-        """
-        Sets the seed for the random number generator.
-        """
-
-        # Get the user's session data
-        session = self.read_session()
-
-        # Set the seed for the random number generator
-        if session is not None:
-            self.seed = self.seed_model.read_seed(int(session["user_id"]))
-
-            if self.seed is not None:
-                self.rng.set_seed(int(self.seed["seed_value"]))
-        else:
-            self.seed = self.rng.set_seed()
-            self.rng.set_seed(self.seed)
-
-    def handle_generate_sequence_btn(self):
+    def on_seed_set(self, seed_value):
 
         try:
-            self.set_seed()
+            self.seed = seed_value
+            self.rng.set_seed(self.seed)
 
-            number_sequence = self.generate_sequence()
+            if self.waiting_for_seed:
+                self.waiting_for_seed = False
+                sequence = self.generate_sequence()
 
-            number_output = self.group_sequence(number_sequence)
-
-            self.print_output.set_output(
-                Output(
+                output = Output(
                     lower_bound=self.ui_elements.l_bound.value(),
                     upper_bound=self.ui_elements.u_bound.value(),
                     optional_params={},
                     n_groups=self.ui_elements.n_groups.value(),
                     n_elements=self.ui_elements.n_elements.value(),
-                    seed=self.rng.rng.state,
-                    output=number_output,
+                    seed=self.seed,
+                    output=sequence,
                 )
-            )
 
-            session = self.read_session()
+                self.event_manager.sequence_generated.emit(output)
 
-            if session is not None:
-                self.project_model.create_project(
-                    self.ui_elements.sequence_name.text(),
-                    int(session["user_id"]),
-                    self.rng.rng.state,
-                    self.ui_elements.l_bound.value(),
-                    self.ui_elements.u_bound.value(),
-                    self.ui_elements.n_elements.value(),
-                    self.ui_elements.n_groups.value(),
-                    str(number_output),
+        except InvalidInputError as e:
+            self.update_ui_for_errors(e)
+
+    def handle_generate_sequence_btn(self):
+
+        try:
+            if self.seed is None:
+                self.waiting_for_seed = True
+                self.event_manager.request_seed.emit()
+            else:
+                sequence = self.generate_sequence()
+
+                output = Output(
+                    lower_bound=self.ui_elements.l_bound.value(),
+                    upper_bound=self.ui_elements.u_bound.value(),
+                    optional_params={},
+                    n_groups=self.ui_elements.n_groups.value(),
+                    n_elements=self.ui_elements.n_elements.value(),
+                    seed=self.seed,
+                    output=sequence,
                 )
+
+                self.event_manager.sequence_generated.emit(output)
 
         except InvalidInputError as e:
             self.update_ui_for_errors(e)

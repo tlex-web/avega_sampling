@@ -18,7 +18,9 @@ from controllers.windowController import WindowController
 from controllers.menuController import MenuController
 from controllers.numberSequenceController import UIElementsNumberSequence
 from controllers.datesSequenceController import UIElementsDatesSequence
+
 from library.helpers.printOutput import PrintOutput
+from library.EventManager import EventManager
 
 from db.Database import Database
 from config import DB_FILENAME
@@ -84,6 +86,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        # setup the event manager
+        event_manager = EventManager()
+
         # setup the output window
         self.output_window = OutputWindow()
 
@@ -126,10 +131,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Output Window signals
         self.output_controller = OutputWindowController(
             self.output_window,
+            event_manager,
             self.btn_generate_numbers,
             self.btn_generate_dates,
             self.signals,
         )
+
+        # Connect request_seed signal to show the seed window
+        event_manager.request_seed.connect(self.seed_window.show)
 
         # Number Sequence tab signals
         self.number_sequence_controller = NumberSequenceController(
@@ -150,6 +159,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 ascending_order=self.radiobutton_asc_numbers,
                 descending_order=self.radiobutton_desc_numbers,
             ),
+            event_manager=event_manager,
         )
 
         # Dates Sequence tab signals
@@ -181,7 +191,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Seed Window signals
         self.seed_controller = SeedController(
-            self.seed_window, self.btn_seed_numbers, self.btn_seed_dates
+            self.seed_window, event_manager, self.btn_seed_numbers, self.btn_seed_dates
         )
 
 

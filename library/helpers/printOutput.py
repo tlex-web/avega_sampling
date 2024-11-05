@@ -5,12 +5,12 @@ from library.Logger import log, LogEnvironment
 
 
 class Output(NamedTuple):
-    lower_bound: float
-    upper_bound: float
+    lower_bound: int | float | str
+    upper_bound: int | float | str
     optional_params: dict
     n_groups: int
     n_elements: int
-    seed: int
+    seed: int | float
     output: dict
 
 
@@ -20,22 +20,6 @@ class PrintOutput:
         self,
     ) -> None:
         self.output = None
-
-    def set_output(self, output: Output) -> None:
-        """Set the output to be printed.
-
-        Args:
-            output (Output): The output to be printed.
-        """
-
-        if isinstance(output, Output):
-            self.output = output
-        else:
-            log.error(
-                "The output must be an instance of the Output class.",
-                LogEnvironment.UTILS,
-            )
-            raise TypeError("The output must be an instance of the Output class.")
 
     def output_to_template_str(self):
         """Generate a HTML report based on the generated output.
