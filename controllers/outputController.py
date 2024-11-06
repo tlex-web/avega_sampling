@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QPushButton
 from PyQt6.QtCore import QObject
 
 # from app import OutputWindow
-from library.helpers.printOutput import PrintOutput
+from library.helpers.printOutput import Output, PrintOutput
 
 
 class OutputWindowController(QObject):
@@ -13,14 +13,13 @@ class OutputWindowController(QObject):
         event_manager,
         btn_generate_numbers: QPushButton,
         btn_generate_dates: QPushButton,
-        print_output: PrintOutput,
     ) -> None:
         super().__init__()
         self.output_window = output_window
         self.event_manager = event_manager
         self.btn_generate_numbers = btn_generate_numbers
         self.btn_generate_dates = btn_generate_dates
-        self.print_output = print_output
+        self.print_output = PrintOutput()
 
         self.event_manager.sequence_generated.connect(self.show_output)
         self.output_window.pushButton_save_as_output.clicked.connect(self.save_output)
@@ -32,9 +31,10 @@ class OutputWindowController(QObject):
             output (Output): The output to be displayed.
         """
 
-        # reformat the output to be displayed in the output window
+        # recast data to output objet
+        dto = Output(*dto)
 
-        self.current_dto = self.print_output.output_to_template_str()
+        self.current_dto = self.print_output.output_to_template_str(dto)
         self.output_window.output_element.setHtml(self.current_dto)
         self.output_window.show()
 

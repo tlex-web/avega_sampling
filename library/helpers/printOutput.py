@@ -5,8 +5,8 @@ from library.Logger import log, LogEnvironment
 
 
 class Output(NamedTuple):
-    lower_bound: int | float | str
-    upper_bound: int | float | str
+    lower_bound: int | str
+    upper_bound: int | str
     optional_params: dict
     n_groups: int
     n_elements: int
@@ -21,7 +21,7 @@ class PrintOutput:
     ) -> None:
         self.output = None
 
-    def output_to_template_str(self):
+    def output_to_template_str(self, data: Output) -> str:
         """Generate a HTML report based on the generated output.
 
         Returns:
@@ -32,16 +32,16 @@ class PrintOutput:
             with open("view/templates/output_window.html", "r") as file:
                 template = Template(file.read())
 
-            if self.output:
+            if data:
                 output = template.substitute(
                     {
-                        "%l_bound%": self.output.lower_bound,
-                        "u_bound": self.output.upper_bound,
-                        "optional_params": self.output.optional_params,
-                        "n_groups": self.output.n_groups,
-                        "n_elements": self.output.n_elements,
-                        "seed": self.output.seed,
-                        "output": self.output.output,
+                        "l_bound": data.lower_bound,
+                        "u_bound": data.upper_bound,
+                        "optional_params": data.optional_params,
+                        "n_groups": data.n_groups,
+                        "n_elements": data.n_elements,
+                        "seed": data.seed,
+                        "output": data.output,
                     }
                 )
 

@@ -33,14 +33,19 @@ class Ui_MainWindow(object):
         self.comboBox = QtWidgets.QComboBox(parent=self.widget)
         self.comboBox.setObjectName("comboBox")
         self.verticalLayout_3.addWidget(self.comboBox)
-        spacerItem = QtWidgets.QSpacerItem(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)  # type: ignore
+        spacerItem = QtWidgets.QSpacerItem(
+            16,
+            20,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.verticalLayout_3.addItem(spacerItem)
         self.textBrowser = QtWidgets.QTextBrowser(parent=self.widget)
         self.textBrowser.setObjectName("textBrowser")
         self.verticalLayout_3.addWidget(self.textBrowser)
         self.verticalLayout_2.addLayout(self.verticalLayout_3)
         self.verticalLayout.addWidget(self.widget)
-        MainWindow.setCentralWidget(self.centralwidget)
+        # MainWindow.centralwidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

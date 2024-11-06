@@ -134,7 +134,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             event_manager,
             self.btn_generate_numbers,
             self.btn_generate_dates,
-            self.signals,
         )
 
         # Connect request_seed signal to show the seed window
