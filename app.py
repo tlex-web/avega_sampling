@@ -25,7 +25,7 @@ from library.EventManager import EventManager
 from db.Database import Database
 from config import DB_FILENAME
 
-import resources  # ignore: needed for assets and correct packaging
+# import resources  # ignore: needed for assets and correct packaging
 
 # create database object
 db = Database(DB_FILENAME)
@@ -138,6 +138,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Connect request_seed signal to show the seed window
         event_manager.request_seed.connect(self.seed_window.show)
+        event_manager.open_seed_window.connect(self.seed_window.show)
 
         # Number Sequence tab signals
         self.number_sequence_controller = NumberSequenceController(

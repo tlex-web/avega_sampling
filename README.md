@@ -60,9 +60,24 @@ coverage html
 The UI was tested manually to ensure that the components were working as expected.
 
 ## Installation
-1. Create an Executable using *pyinstaller*
-2. Copy the Executable to the folder where you want to use it
-3. Run the Executable
+To create an executable of your PyQt6 application, you can use **PyInstaller**. Here are the steps:
+
+1. **Install PyInstaller** if you haven't already:
+    ```bash
+    pip install pyinstaller
+    ```
+
+2. **Navigate to your project directory** containing `app.py`.
+
+3. **Run PyInstaller** to build the executable:
+    ```bash
+    pyinstaller --onefile app.py
+    ```
+
+    - The `--onefile` option creates a single executable file.
+    - If your application uses additional files like icons or resources, make sure they are included. You can specify them using the `--add-data` option.
+
+4. **Find the executable** in the `dist` folder created by PyInstaller.
 
 ## Usage
 1. Run the Executable

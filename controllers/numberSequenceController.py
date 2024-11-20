@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QPushButton, QLabel, QRadioButton, QSpinBox, QLineEdit
+from datetime import datetime
 from typing import NamedTuple
 
 from controllers.baseSequenceController import BaseSequenceController
@@ -48,7 +49,10 @@ class NumberSequenceController(BaseSequenceController):
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_numbers.clicked.connect(
-            self.handle_generate_sequence_btn
+            self.generate_emit_sequence
+        )
+        self.ui_elements.btn_seed_numbers.clicked.connect(
+            self.event_manager.request_seed.emit
         )
         self.event_manager.seed_set.connect(self.on_seed_set)
         self.waiting_for_seed = False
@@ -225,24 +229,15 @@ class NumberSequenceController(BaseSequenceController):
 
             if self.waiting_for_seed:
                 self.waiting_for_seed = False
-                sequence = self.generate_sequence()
+                self.generate_emit_sequence()
 
-                output = Output(
-                    lower_bound=self.ui_elements.l_bound.value(),
-                    upper_bound=self.ui_elements.u_bound.value(),
-                    optional_params={},
-                    n_groups=self.ui_elements.n_groups.value(),
-                    n_elements=self.ui_elements.n_elements.value(),
-                    seed=self.seed,
-                    output=sequence,
-                )
+        except Exception as e:
+            self.ui_elements.sequence_name.setStyleSheet(
+                "color: red; border: 1px solid red;"
+            )
+            self.ui_elements.sequence_name.setToolTip(str(e))
 
-                self.event_manager.sequence_generated.emit(output)
-
-        except InvalidInputError as e:
-            self.update_ui_for_errors(e)
-
-    def handle_generate_sequence_btn(self):
+    def generate_emit_sequence(self):
 
         try:
             if self.seed is None:
@@ -252,6 +247,10 @@ class NumberSequenceController(BaseSequenceController):
                 sequence = self.generate_sequence()
 
                 output = Output(
+                    None,
+                    None,
+                    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    sampling_method="Random Number Sequence",
                     lower_bound=self.ui_elements.l_bound.value(),
                     upper_bound=self.ui_elements.u_bound.value(),
                     optional_params={},

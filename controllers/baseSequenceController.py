@@ -41,5 +41,5 @@ class BaseSequenceController(ABC):
         pass
 
     @abstractmethod
-    def handle_generate_sequence_btn(self):
+    def generate_emit_sequence(self):
         pass

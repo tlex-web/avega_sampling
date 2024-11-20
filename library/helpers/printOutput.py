@@ -5,6 +5,10 @@ from library.Logger import log, LogEnvironment
 
 
 class Output(NamedTuple):
+    company_name: str | None
+    year: int | None
+    date: str
+    sampling_method: str
     lower_bound: int | str
     upper_bound: int | str
     optional_params: dict
@@ -35,13 +39,17 @@ class PrintOutput:
             if data:
                 output = template.substitute(
                     {
-                        "l_bound": data.lower_bound,
-                        "u_bound": data.upper_bound,
-                        "optional_params": data.optional_params,
-                        "n_groups": data.n_groups,
-                        "n_elements": data.n_elements,
-                        "seed": data.seed,
-                        "output": data.output,
+                        "company_name": str(data.company_name),
+                        "year": str(data.year),
+                        "date": str(data.date),
+                        "sampling_method": str(data.sampling_method),
+                        "l_bound": str(data.lower_bound),
+                        "u_bound": str(data.upper_bound),
+                        "optional_params": str(data.optional_params),
+                        "n_groups": str(data.n_groups),
+                        "n_elements": str(data.n_elements),
+                        "seed": str(data.seed),
+                        "output": str(data.output),
                     }
                 )
 
@@ -49,4 +57,7 @@ class PrintOutput:
 
         except FileNotFoundError:
             log.error("The output template file was not found.", LogEnvironment.UTILS)
-            raise FileNotFoundError("The output template file was not found.")
+            return ""
+        except Exception as e:
+            log.error(f"Failed to generate output template: {e}", LogEnvironment.UTILS)
+            return ""

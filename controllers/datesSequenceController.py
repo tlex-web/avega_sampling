@@ -69,9 +69,7 @@ class DatesSequenceController(BaseSequenceController):
 
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_dates.clicked.connect(self.clear_fields)
-        self.ui_elements.btn_generate_dates.clicked.connect(
-            self.handle_generate_sequence_btn
-        )
+        self.ui_elements.btn_generate_dates.clicked.connect(self.generate_emit_sequence)
 
     def clear_fields(self):
         """
@@ -292,7 +290,7 @@ class DatesSequenceController(BaseSequenceController):
 
         return date_output
 
-    def handle_generate_sequence_btn(self):
+    def generate_emit_sequence(self):
 
         try:
             date_sequence = self.generate_sequence()
