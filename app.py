@@ -25,7 +25,7 @@ from library.EventManager import EventManager
 from db.Database import Database
 from config import DB_FILENAME
 
-# import resources  # ignore: needed for assets and correct packaging
+import resources  # ignore: needed for assets and correct packaging
 
 # create database object
 db = Database(DB_FILENAME)
