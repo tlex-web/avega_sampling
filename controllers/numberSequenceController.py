@@ -49,7 +49,7 @@ class NumberSequenceController(BaseSequenceController):
         # Setup signals and slots for number sequence-related actions
         self.ui_elements.btn_clear_numbers.clicked.connect(self.clear_fields)
         self.ui_elements.btn_generate_numbers.clicked.connect(
-            self.generate_emit_sequence
+            self.handle_generate_sequence
         )
         self.ui_elements.btn_seed_numbers.clicked.connect(
             self.event_manager.request_seed.emit
@@ -66,16 +66,12 @@ class NumberSequenceController(BaseSequenceController):
         self.ui_elements.sequence_name.clear()
         self.ui_elements.sequence_name.setPlaceholderText("sequence 1")
 
-        self.ui_elements.l_bound.clear()
         self.ui_elements.l_bound.setValue(0)
 
-        self.ui_elements.u_bound.clear()
         self.ui_elements.u_bound.setValue(0)
 
-        self.ui_elements.n_groups.clear()
-        self.ui_elements.n_groups.setValue(1)
+        self.ui_elements.n_groups.setValue(0)
 
-        self.ui_elements.n_elements.clear()
         self.ui_elements.n_elements.setValue(0)
 
         self.ui_elements.original_order.setChecked(True)
@@ -223,24 +219,34 @@ class NumberSequenceController(BaseSequenceController):
 
     def on_seed_set(self, seed_value):
 
-        try:
-            self.seed = seed_value
-            self.rng.set_seed(self.seed)
+        self.seed = seed_value
+        self.rng.set_seed(self.seed)
 
-            if self.waiting_for_seed:
-                self.waiting_for_seed = False
-                self.generate_emit_sequence()
+        if self.waiting_for_seed:
+            self.waiting_for_seed = False
+            self.generate_and_emit_sequence()
 
-        except Exception as e:
-            self.ui_elements.sequence_name.setStyleSheet(
-                "color: red; border: 1px solid red;"
-            )
-            self.ui_elements.sequence_name.setToolTip(str(e))
-
-    def generate_emit_sequence(self):
+    def handle_generate_sequence(self):
+        """
+        Handles the generation of a number sequence.
+        """
 
         try:
+            self.reset_ui()
+            self.check_input_fields()
+
             if self.seed is None:
+                self.event_manager.request_seed.emit()
+                self.waiting_for_seed = True
+            else:
+                self.generate_and_emit_sequence()
+        except InvalidInputError as e:
+            self.update_ui_for_errors(e)
+
+    def generate_and_emit_sequence(self, seed_set=False):
+
+        try:
+            if not seed_set and self.seed is None:
                 self.waiting_for_seed = True
                 self.event_manager.request_seed.emit()
             else:

@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QFileDialog
 from PyQt6.QtWidgets import QPushButton
 from PyQt6.QtCore import QObject
 
-# from app import OutputWindow
 from library.helpers.printOutput import Output, PrintOutput
 
 
